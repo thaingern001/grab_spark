@@ -1,0 +1,12 @@
+**/node_modules/
+**/.next/
+**/.next-judge/
+**/.venv/
+**/.pytest_cache/
+**/__pycache__/
+**/*.pyc
+**/.env
+**/.env.local
+**/.vercel/
+**/tsconfig.tsbuildinfo
+**/*.egg-info/

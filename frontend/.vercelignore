@@ -1,0 +1,6 @@
+node_modules/
+.next/
+.next-judge/
+.env.local
+tsconfig.tsbuildinfo
+scripts/*-e2e.mjs

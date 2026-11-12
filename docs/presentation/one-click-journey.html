@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="th">
+<meta charset="utf-8">
+<title>One Click merchant journey</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; }
+  body { color: #14261b; background: radial-gradient(circle at 50% 15%, #fff 0, #f8fbf8 54%, #edf5ef 100%); font-family: "Segoe UI", "Noto Sans Thai", Arial, sans-serif; }
+  .slide { width: 1920px; height: 1080px; padding: 42px 78px 34px; position: relative; }
+  .eyebrow { color: #087340; font-size: 18px; font-weight: 800; letter-spacing: .13em; }
+  h1 { margin: 8px 0 4px; font-size: 49px; line-height: 1.08; letter-spacing: -.04em; }
+  .subtitle { margin: 0; color: #56695d; font-size: 21px; }
+  .journey { margin-top: 30px; display: flex; justify-content: space-between; align-items: start; gap: 22px; }
+  .step { width: 327px; flex: 0 0 327px; position: relative; }
+  .step:not(:last-child)::after { content: "→"; position: absolute; z-index: 2; top: 301px; right: -29px; width: 34px; height: 34px; border-radius: 50%; background: #e4f5e9; color: #057c3b; font-size: 29px; line-height: 29px; text-align: center; font-weight: 800; box-shadow: 0 4px 12px #24492c22; }
+  .phone { width: 327px; height: 674px; padding: 7px; border: 3px solid #1d2420; border-radius: 39px; background: #111713; box-shadow: 0 16px 35px #24482d25, 0 3px 6px #24482d18; }
+  .screen { width: 100%; height: 100%; position: relative; overflow: hidden; border-radius: 29px; background: #fff; }
+  .status { height: 34px; padding: 10px 16px 0; display: flex; justify-content: space-between; color: #18211b; font-size: 11px; font-weight: 800; }
+  .status.dark { color: #fff; }
+  .notch { position: absolute; top: 6px; left: 50%; transform: translateX(-50%); width: 75px; height: 17px; border-radius: 20px; background: #111713; z-index: 4; }
+  .screen-header { padding: 8px 17px 13px; font-weight: 800; font-size: 16px; }
+  .screen-header small { display: block; margin-top: 2px; color: #6f7d72; font-size: 10px; font-weight: 600; }
+  .green-header { height: 135px; color: #fff; background: linear-gradient(135deg,#007d3b,#04a354); }
+  .green-header .screen-header { font-size: 21px; }
+  .home-body { position: absolute; top: 114px; bottom: 0; left: 0; right: 0; padding: 0 15px; background: #fafcf9; border-radius: 18px 18px 0 0; }
+  .store-card, .card { background: #fff; border: 1px solid #e1e9e2; border-radius: 13px; box-shadow: 0 5px 13px #1538200b; }
+  .store-card { padding: 12px; margin-top: 13px; display: flex; gap: 9px; align-items: center; font-size: 12px; }
+  .store-icon { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 10px; color: #057c3b; background: #dff5e6; font-size: 19px; }
+  .store-card small { display: block; color: #627267; font-size: 10px; }
+  .section-title { margin: 20px 0 9px; font-size: 14px; font-weight: 800; }
+  .metric-row { display: flex; gap: 7px; }
+  .metric { flex: 1; padding: 11px 7px; border: 1px solid #e2e9e3; border-radius: 10px; background: #fff; }
+  .metric small { display: block; color: #6d7a70; font-size: 9px; }
+  .metric strong { display: block; margin-top: 5px; font-size: 17px; }
+  .opp-card { margin-top: 20px; padding: 13px; border: 1px solid #cae9d4; border-radius: 13px; background: linear-gradient(120deg,#effaf1,#fff); }
+  .pill { display: inline-block; border-radius: 20px; padding: 5px 8px; color: #006f36; background: #daf5e3; font-size: 9px; font-weight: 800; }
+  .opp-card h3 { margin: 9px 0 5px; font-size: 17px; line-height: 1.2; }
+  .opp-card p { margin: 0 0 8px; color: #4b6151; font-size: 11px; line-height: 1.35; }
+  .opp-card b { color: #007a38; font-size: 16px; }
+  .small-link { display: flex; justify-content: space-between; align-items: center; margin-top: 11px; padding-top: 9px; border-top: 1px solid #d8eadc; color: #00753b; font-size: 11px; font-weight: 800; }
+  .nav { position: absolute; bottom: 0; left: 0; right: 0; height: 45px; display: flex; justify-content: space-around; align-items: center; background: #fff; border-top: 1px solid #e7ece7; color: #738176; font-size: 9px; }
+  .nav b { color: #00843c; }
+  .top-context { height: 78px; background: linear-gradient(135deg,#078346,#dff2e5); opacity: .42; }
+  .sheet { position: absolute; top: 54px; bottom: 0; left: 0; right: 0; padding: 15px 13px; border-radius: 24px 24px 0 0; background: #fff; box-shadow: 0 -5px 18px #1c4c2c25; }
+  .handle { width: 38px; height: 4px; margin: -5px auto 16px; border-radius: 8px; background: #c9d4cd; }
+  .sheet h2 { margin: 8px 0 4px; font-size: 20px; line-height: 1.17; }
+  .sheet p { margin: 0; color: #53655a; font-size: 10px; line-height: 1.35; }
+  .risk-note { margin: 8px 0 !important; color: #355b42 !important; font-weight: 700; }
+  .strategy { display: flex; align-items: center; gap: 9px; margin-top: 8px; padding: 8px; border: 1px solid #e0e8e1; border-radius: 12px; }
+  .strategy.featured { border: 2px solid #058943; padding: 7px; background: #f3fbf5; }
+  .strategy img { width: 53px; height: 53px; border-radius: 8px; object-fit: cover; }
+  .strategy .copy { flex: 1; min-width: 0; }
+  .strategy .copy b { display: block; font-size: 13px; }
+  .strategy .copy small { display: block; margin-top: 2px; color: #66766b; font-size: 9px; }
+  .strategy .value { text-align: right; font-size: 13px; font-weight: 800; color: #00803d; white-space: nowrap; }
+  .strategy .value small { display: block; font-size: 9px; color: #4b6353; font-weight: 600; }
+  .sheet-footer { position: absolute; left: 13px; right: 13px; bottom: 16px; }
+  .button { display: grid; place-items: center; width: 100%; height: 36px; border-radius: 10px; color: #fff; background: #00883e; font-size: 11px; font-weight: 800; }
+  .secondary { margin-top: 9px; color: #08773b; text-align: center; font-size: 10px; font-weight: 800; }
+  .detail-body { padding: 0 15px; }
+  .detail-body h2, .result-body h2 { margin: 5px 0 4px; font-size: 20px; }
+  .detail-body > p, .result-body > p { margin: 0 0 12px; color: #637268; font-size: 10px; }
+  .food-photo { width: 100%; height: 132px; border-radius: 12px; object-fit: cover; }
+  .detail-tabs { display: flex; justify-content: space-around; margin: 13px 0; padding-bottom: 8px; border-bottom: 1px solid #e4eae5; color: #718076; font-size: 10px; }
+  .detail-tabs b { color: #007b3d; }
+  .financial { padding: 13px; border-radius: 12px; background: #edf8f0; }
+  .financial small { display: block; color: #526b59; font-size: 10px; }
+  .financial strong { display: block; margin: 3px 0; color: #007c3a; font-size: 28px; }
+  .line { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid #e5ece6; font-size: 11px; }
+  .line b { color: #006f35; }
+  .note { margin-top: 13px; padding: 11px; border-radius: 10px; background: #f5f7f5; color: #506259; font-size: 10px; line-height: 1.4; }
+  .approval .sheet { top: 105px; }
+  .approval .feature-box { padding: 11px; border: 1px solid #cce8d4; border-radius: 12px; background: #f3fbf5; }
+  .approval .feature-box strong { display: block; font-size: 15px; }
+  .approval .feature-box span { display: block; margin-top: 4px; color: #057b3b; font-size: 16px; font-weight: 800; }
+  .approval .consent { display: flex; gap: 7px; align-items: start; margin: 11px 0; font-size: 10px; line-height: 1.35; }
+  .approval .check { width: 14px; height: 14px; flex: 0 0 14px; display: grid; place-items: center; border-radius: 3px; color: #fff; background: #008743; font-size: 10px; }
+  .approval .sheet-footer { bottom: 18px; }
+  .result-body { padding: 0 15px; }
+  .result-head { text-align: center; padding: 12px 0 17px; }
+  .check-circle { display: grid; place-items: center; width: 48px; height: 48px; margin: auto; border-radius: 50%; background: #e4f8e9; color: #008641; font-size: 29px; font-weight: 800; }
+  .result-head h2 { margin: 8px 0 3px; }
+  .result-head p { margin: 0; color: #657469; font-size: 10px; }
+  .result-card { padding: 13px; border: 1px solid #cce8d4; border-radius: 13px; background: linear-gradient(135deg,#f1faf3,#fff); }
+  .result-card small { color: #5b6e60; font-size: 10px; }
+  .result-card strong { display: block; margin: 4px 0; color: #007c3a; font-size: 27px; }
+  .result-card b { color: #007c3a; font-size: 13px; }
+  .takeaways { margin-top: 15px; padding: 12px; border-radius: 12px; background: #f1f8f2; }
+  .takeaways h3 { margin: 0 0 8px; font-size: 13px; }
+  .takeaways p { margin: 7px 0; color: #486051; font-size: 10px; line-height: 1.35; }
+  .result-body .button { margin-top: 20px; }
+  .caption { display: flex; gap: 10px; margin: 18px 4px 0; }
+  .number { display: grid; place-items: center; width: 33px; height: 33px; flex: 0 0 33px; border-radius: 50%; color: #fff; background: #00a34f; font-size: 17px; font-weight: 800; }
+  .caption h3 { margin: 1px 0 4px; font-size: 20px; line-height: 1.1; }
+  .caption p { margin: 0; color: #526157; font-size: 15px; line-height: 1.35; }
+  .optional { color: #647369; font-size: 14px; font-weight: 600; }
+  .footer { position: absolute; left: 78px; right: 78px; bottom: 23px; display: flex; justify-content: space-between; border-top: 1px solid #d9e8de; padding-top: 9px; color: #597164; font-size: 13px; }
+</style>
+<main class="slide">
+  <div class="eyebrow">GRABSPARK • ONE CLICK CONCEPT</div>
+  <h1>One Click: from opportunity to learning</h1>
+  <p class="subtitle">A guided merchant journey inside GrabMerchant — one informed approval, then a simulated result.</p>
+  <div class="journey">
+    <section class="step">
+      <div class="phone"><div class="screen">
+        <div class="green-header"><div class="status dark"><span>9:41</span><span>● ▰</span></div><div class="screen-header">GrabMerchant<small>Westrong Kitchen · Demo store</small></div></div><div class="notch"></div>
+        <div class="home-body"><div class="store-card"><span class="store-icon">⌂</span><span><b>Westrong Kitchen</b><small>Your store overview</small></span></div><div class="section-title">Today at a glance</div><div class="metric-row"><div class="metric"><small>Orders</small><strong>23</strong></div><div class="metric"><small>Sales</small><strong>฿2,007</strong></div></div><div class="section-title">For your store</div><div class="opp-card"><span class="pill">✦ ONE CLICK · NEW</span><h3>Try a chicken rice + drink bundle</h3><p>Compare 3 modeled strategies for your store.</p><b>+฿304.00</b><div class="small-link">View recommendation <span>→</span></div></div><div class="nav"><b>Home</b><span>Orders</span><span>Menu</span><span>Insights</span><span>One Click</span></div></div>
+      </div></div>
+      <div class="caption"><span class="number">1</span><div><h3>Discover</h3><p>เห็นโอกาสที่แนะนำ<br>บนหน้า Home</p></div></div>
+    </section>
+    <section class="step">
+      <div class="phone"><div class="screen">
+        <div class="status"><span>9:41</span><span>● ▰</span></div><div class="notch"></div><div class="top-context"></div>
+        <div class="sheet"><div class="handle"></div><span class="pill">✦ ONE CLICK · RECOMMENDED</span><h2>Compare 3 strategies</h2><p>Estimated 7-day contribution difference vs. baseline.</p><p class="risk-note">Illustrative risk score · Lower is better</p>
+          <div class="strategy featured"><img src="../../frontend/public/strategy-previews/bundle-concept.png"><div class="copy"><b>Bundle ⭐</b><small>Meal + drink set</small></div><div class="value">+฿304<small>Risk 25/100</small></div></div>
+          <div class="strategy"><img src="../../frontend/public/strategy-previews/discount-concept.png"><div class="copy"><b>Discount</b><small>Merchant-funded offer</small></div><div class="value">+฿63<small>Risk 29/100</small></div></div>
+          <div class="strategy"><img src="../../frontend/public/strategy-previews/advertising-concept.png"><div class="copy"><b>Advertising</b><small>In-app ad concept</small></div><div class="value">+฿95.60<small>Risk 35/100</small></div></div>
+          <div class="note">AI-generated concept previews. Values come from the synthetic backend model.</div>
+          <div class="sheet-footer"><div class="button">Review and approve Bundle →</div><div class="secondary">View details and compare</div></div>
+        </div>
+      </div></div>
+      <div class="caption"><span class="number">2</span><div><h3>Compare</h3><p>เห็น 3 ทางเลือก พร้อม<br>ผลตอบแทนและความเสี่ยงจำลอง</p></div></div>
+    </section>
+    <section class="step">
+      <div class="phone"><div class="screen">
+        <div class="status"><span>9:41</span><span>● ▰</span></div><div class="notch"></div><div class="screen-header">‹ &nbsp; Bundle details</div>
+        <div class="detail-body"><img class="food-photo" src="../../frontend/public/strategy-previews/bundle-concept.png"><div class="detail-tabs"><b>Financials</b><span>Assumptions</span><span>Why this</span></div><div class="financial"><small>Modeled contribution · 7 days</small><strong>฿956.00</strong><small>Baseline ฿652.00 → Difference <b>+฿304.00</b></small></div><div class="line"><span>Modeled orders</span><b>40</b></div><div class="line"><span>Illustrative risk score</span><b>25/100</b></div><div class="line"><span>Platform deduction</span><b>30% assumption</b></div><div class="note">Review costs and demand assumptions. Edit inputs to recalculate through the backend.</div><div class="secondary" style="margin-top:17px">← Back to recommendation</div></div>
+      </div></div>
+      <div class="caption"><span class="number">3</span><div><h3>Review <span class="optional">(optional)</span></h3><p>เจาะรายละเอียดและสมมติฐาน<br>หรือแก้ต้นทุนก่อนตัดสินใจ</p></div></div>
+    </section>
+    <section class="step">
+      <div class="phone"><div class="screen approval">
+        <div class="status"><span>9:41</span><span>● ▰</span></div><div class="notch"></div><div class="top-context"></div><div class="sheet"><div class="handle"></div><span class="pill">✦ ONE CLICK · SIMULATED TRIAL</span><h2>Ready to try Bundle?</h2><p>One approval starts a modeled 7-day trial. No real campaign is published.</p><div class="feature-box" style="margin-top:16px"><strong>Bundle · Meal + drink set</strong><span>฿652 → ฿956</span><p>Estimated difference +฿304 · Risk 25/100</p></div><div class="section-title">Before approval</div><div class="consent"><span class="check">✓</span><span>I reviewed prices, costs, volumes, spending and assumptions.</span></div><div class="consent"><span class="check">✓</span><span>I understand this is a simulation and no real promotion will be published.</span></div><div class="note">Assumptions are synthetic; modeled returns are not a validated forecast.</div><div class="sheet-footer"><div class="button">Approve and simulate Bundle →</div></div></div>
+      </div></div>
+      <div class="caption"><span class="number">4</span><div><h3>Approve</h3><p>ยืนยันข้อมูลและการทดลองจำลอง<br>ด้วยความยินยอม 2 ข้อ</p></div></div>
+    </section>
+    <section class="step">
+      <div class="phone"><div class="screen">
+        <div class="status"><span>9:41</span><span>● ▰</span></div><div class="notch"></div><div class="screen-header">‹ &nbsp; One Click result</div><div class="result-body"><div class="result-head"><div class="check-circle">✓</div><h2>Simulated result ready</h2><p>Bundle · Modeled 7-day result</p></div><div class="result-card"><small>Modeled 7-day contribution</small><strong>฿956.00</strong><b>+฿304.00 vs. ฿652.00 baseline</b></div><div class="line"><span>Modeled orders</span><b>40 → 40</b></div><div class="line"><span>Illustrative risk</span><b>25/100</b></div><div class="takeaways"><h3>What the simulation suggests</h3><p>• Higher modeled contribution under current assumptions.</p><p>• Actual demand and cost outcomes remain uncertain.</p><p>• Review readiness before any real action.</p></div><div class="note">Generated immediately. No real 7-day period has passed.</div><div class="button">Mark result as reviewed</div></div>
+      </div></div>
+      <div class="caption"><span class="number">5</span><div><h3>Learn</h3><p>ดูผลจำลองและข้อควรระวัง<br>ก่อนตัดสินใจทำจริง</p></div></div>
+    </section>
+  </div>
+  <div class="footer"><span>Illustrated journey based on the current working prototype; screens are presentation concepts, not screenshots.</span><span>Synthetic data · No real promotion published</span></div>
+</main>
+</html>

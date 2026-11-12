@@ -1,0 +1,408 @@
+{
+  "evaluation": {
+    "mission_id": "faccfe10-0c22-5e21-926c-1bd929cf041a",
+    "scenario_revision": 1,
+    "evaluation_revision": 1,
+    "model_version": "multi-strategy-v2",
+    "trial_days": 7,
+    "baseline": {
+      "estimated_units": 40,
+      "unit_contribution": "16.30",
+      "estimated_gmv": "3160.00",
+      "merchant_revenue": "2212.00",
+      "estimated_7d_contribution": "652.00"
+    },
+    "assumptions": {
+      "baseline_units": 40,
+      "bundle_units": 38,
+      "discount_amount": "5.00",
+      "discount_demand_lift": "0.2500",
+      "advertising_spend": "100.00",
+      "advertising_incremental_orders": 12
+    },
+    "assumption_details": {
+      "baseline_units": {
+        "name": "Baseline orders",
+        "value": 40,
+        "unit": "orders / 7 days",
+        "source": "Deterministic fictional seed or merchant-edited scenario input",
+        "explanation": "Illustrative seven-day Chicken Rice volume; not observed demand.",
+        "merchant_confirmation_required": true,
+        "editable": true
+      },
+      "bundle_units": {
+        "name": "Proposed bundle orders",
+        "value": 38,
+        "unit": "bundles / 7 days",
+        "source": "Deterministic fictional seed or merchant-edited scenario input",
+        "explanation": "Each bundle first substitutes one baseline order; any excess adds an order.",
+        "merchant_confirmation_required": true,
+        "editable": true
+      },
+      "discount_amount": {
+        "name": "Merchant-funded discount",
+        "value": "5.00",
+        "unit": "THB / redeemed order",
+        "source": "Deterministic fictional seed or merchant-edited scenario input",
+        "explanation": "Added to any baseline merchant discount exactly once.",
+        "merchant_confirmation_required": true,
+        "editable": true
+      },
+      "discount_demand_lift": {
+        "name": "Synthetic discount demand lift",
+        "value": "0.2500",
+        "unit": "fraction of baseline orders",
+        "source": "Deterministic fictional seed or merchant-edited scenario input",
+        "explanation": "Illustrative demand response, not a validated forecast; incremental discounted orders are rounded half up.",
+        "merchant_confirmation_required": true,
+        "editable": true
+      },
+      "advertising_spend": {
+        "name": "Advertising budget",
+        "value": "100.00",
+        "unit": "THB / 7 days",
+        "source": "Deterministic fictional seed or merchant-edited scenario input",
+        "explanation": "Deducted once from seven-day contribution, outside merchant revenue.",
+        "merchant_confirmation_required": true,
+        "editable": true
+      },
+      "advertising_incremental_orders": {
+        "name": "Synthetic advertising conversions",
+        "value": 12,
+        "unit": "orders / 7 days",
+        "source": "Deterministic fictional seed or merchant-edited scenario input",
+        "explanation": "Illustrative attributed orders, not a validated forecast; actual conversion and attribution are uncertain.",
+        "merchant_confirmation_required": true,
+        "editable": true
+      },
+      "discount_existing_redemption_rate": {
+        "name": "Existing orders redeeming discount",
+        "value": "0.2500",
+        "unit": "fraction of baseline orders",
+        "source": "Fixed illustrative prototype assumption; not a Grab benchmark",
+        "explanation": "10 baseline orders switch from full price to discounted price under current volume; remaining baseline orders keep full price.",
+        "merchant_confirmation_required": true,
+        "editable": false
+      }
+    },
+    "risk_methodology": "Illustrative modeled risk score (0–100), lower is less modeled risk; fixed uncertainty inputs are not empirically validated probabilities.",
+    "provenance": "Westrong Kitchen data and extra orders attributed to discounts or ads are synthetic demo assumptions, not forecasts validated by real campaigns. The merchant should confirm costs and spending.",
+    "recommended_strategy_id": "bundle",
+    "recommendation_reason": "Bundle has the lowest illustrative modeled risk score (25/100). Ties are ordered Bundle, Discount, Advertising.",
+    "strategies": [
+      {
+        "strategy_id": "bundle",
+        "type": "bundle",
+        "title": "Bundle",
+        "description": "A proposed meal and drink set",
+        "eligible": true,
+        "model_version": "multi-strategy-v2",
+        "estimated_units": 40,
+        "unit_price": "99.00",
+        "unit_contribution": "24.30",
+        "merchant_discount_per_order": "0.00",
+        "platform_deduction_per_order": "29.70",
+        "food_cost_per_order": "40.00",
+        "packaging_cost_per_order": "5.00",
+        "other_cost_per_order": "0.00",
+        "additional_spend": "0.00",
+        "estimated_gmv": "3920.00",
+        "merchant_revenue": "2744.00",
+        "platform_deduction_total": "1176.00",
+        "merchant_discount_total": "0.00",
+        "variable_cost_total": "1788.00",
+        "volume_breakdown": {
+          "retained_baseline_orders": 2,
+          "strategy_orders": 38,
+          "substituted_baseline_orders": 38,
+          "incremental_orders": 0
+        },
+        "estimated_7d_contribution": "956.00",
+        "estimated_difference": "304.00",
+        "risk_score": 25,
+        "risk_dimensions": {
+          "financial_downside": 0,
+          "demand_uncertainty": 40,
+          "assumption_uncertainty": 40,
+          "operational_complexity": 45,
+          "additional_spend": 0
+        },
+        "risk_factors": [
+          "Modeled bundle orders may replace existing orders",
+          "Existing orders not converted to bundles remain in the total"
+        ]
+      },
+      {
+        "strategy_id": "discount",
+        "type": "discount",
+        "title": "Discount",
+        "description": "A merchant-funded offer",
+        "eligible": true,
+        "model_version": "multi-strategy-v2",
+        "estimated_units": 50,
+        "unit_price": "79.00",
+        "unit_contribution": "11.30",
+        "merchant_discount_per_order": "5.00",
+        "platform_deduction_per_order": "23.70",
+        "food_cost_per_order": "35.00",
+        "packaging_cost_per_order": "4.00",
+        "other_cost_per_order": "0.00",
+        "additional_spend": "0.00",
+        "estimated_gmv": "3950.00",
+        "merchant_revenue": "2665.00",
+        "platform_deduction_total": "1185.00",
+        "merchant_discount_total": "100.00",
+        "variable_cost_total": "1950.00",
+        "volume_breakdown": {
+          "retained_baseline_orders": 30,
+          "strategy_orders": 20,
+          "substituted_baseline_orders": 10,
+          "incremental_orders": 10
+        },
+        "estimated_7d_contribution": "715.00",
+        "estimated_difference": "63.00",
+        "risk_score": 29,
+        "risk_dimensions": {
+          "financial_downside": 0,
+          "demand_uncertainty": 55,
+          "assumption_uncertainty": 55,
+          "operational_complexity": 20,
+          "additional_spend": 15
+        },
+        "risk_factors": [
+          "An illustrative 25% of existing orders redeem the offer; this is not a Grab benchmark",
+          "Extra orders may not offset discounts given to existing customers"
+        ]
+      },
+      {
+        "strategy_id": "advertising",
+        "type": "advertising",
+        "title": "Advertising",
+        "description": "A sample in-app ad",
+        "eligible": true,
+        "model_version": "multi-strategy-v2",
+        "estimated_units": 52,
+        "unit_price": "79.00",
+        "unit_contribution": "16.30",
+        "merchant_discount_per_order": "0.00",
+        "platform_deduction_per_order": "23.70",
+        "food_cost_per_order": "35.00",
+        "packaging_cost_per_order": "4.00",
+        "other_cost_per_order": "0.00",
+        "additional_spend": "100.00",
+        "estimated_gmv": "4108.00",
+        "merchant_revenue": "2875.60",
+        "platform_deduction_total": "1232.40",
+        "merchant_discount_total": "0.00",
+        "variable_cost_total": "2028.00",
+        "volume_breakdown": {
+          "retained_baseline_orders": 40,
+          "strategy_orders": 12,
+          "substituted_baseline_orders": 0,
+          "incremental_orders": 12
+        },
+        "estimated_7d_contribution": "747.60",
+        "estimated_difference": "95.60",
+        "risk_score": 35,
+        "risk_dimensions": {
+          "financial_downside": 0,
+          "demand_uncertainty": 70,
+          "assumption_uncertainty": 60,
+          "operational_complexity": 25,
+          "additional_spend": 15
+        },
+        "risk_factors": [
+          "Additional orders attributed to ads are assumptions and may not occur",
+          "Ad spend is deducted once from total contribution"
+        ]
+      }
+    ]
+  },
+  "dashboard": {
+    "today": {
+      "from": "2026-11-07",
+      "to": "2026-11-07",
+      "gmv": "2007.00",
+      "merchant_revenue": "1404.90",
+      "estimated_contribution": "415.90",
+      "orders": 23,
+      "aov": "87.26",
+      "prior_gmv": "0.00",
+      "synthetic": true
+    },
+    "monthly_trend": [
+      {
+        "from": "2026-05-01",
+        "to": "2026-05-31",
+        "gmv": "35171.00",
+        "merchant_revenue": "24619.70",
+        "estimated_contribution": "7340.70",
+        "orders": 416,
+        "aov": "84.55",
+        "prior_gmv": "0.00",
+        "synthetic": true
+      },
+      {
+        "from": "2026-06-01",
+        "to": "2026-06-30",
+        "gmv": "37538.00",
+        "merchant_revenue": "26276.60",
+        "estimated_contribution": "7739.60",
+        "orders": 432,
+        "aov": "86.89",
+        "prior_gmv": "0.00",
+        "synthetic": true
+      },
+      {
+        "from": "2026-07-01",
+        "to": "2026-07-31",
+        "gmv": "41294.00",
+        "merchant_revenue": "28905.80",
+        "estimated_contribution": "8431.80",
+        "orders": 475,
+        "aov": "86.93",
+        "prior_gmv": "0.00",
+        "synthetic": true
+      },
+      {
+        "from": "2026-08-01",
+        "to": "2026-08-31",
+        "gmv": "43924.00",
+        "merchant_revenue": "30746.80",
+        "estimated_contribution": "9138.80",
+        "orders": 512,
+        "aov": "85.79",
+        "prior_gmv": "0.00",
+        "synthetic": true
+      },
+      {
+        "from": "2026-09-01",
+        "to": "2026-09-30",
+        "gmv": "44620.00",
+        "merchant_revenue": "31234.00",
+        "estimated_contribution": "9229.00",
+        "orders": 522,
+        "aov": "85.48",
+        "prior_gmv": "0.00",
+        "synthetic": true
+      },
+      {
+        "from": "2026-10-01",
+        "to": "2026-10-31",
+        "gmv": "50052.00",
+        "merchant_revenue": "35036.40",
+        "estimated_contribution": "10444.40",
+        "orders": 561,
+        "aov": "89.22",
+        "prior_gmv": "0.00",
+        "synthetic": true
+      }
+    ],
+    "top_items": [
+      {
+        "menu_item_id": "374e83da-1d70-59ac-9643-cac652af136f",
+        "name": "Chicken Rice",
+        "units": 1252,
+        "gmv": "98908.00",
+        "estimated_contribution": "20407.60"
+      },
+      {
+        "menu_item_id": "e812d0ca-1086-5e80-814d-00a26f902093",
+        "name": "Pad Krapow",
+        "units": 407,
+        "gmv": "36223.00",
+        "estimated_contribution": "6634.10"
+      },
+      {
+        "menu_item_id": "239f5730-570f-523b-aaf1-8baab2b15365",
+        "name": "Thai Iced Tea",
+        "units": 1032,
+        "gmv": "36120.00",
+        "estimated_contribution": "9804.00"
+      }
+    ],
+    "opportunity": null,
+    "synthetic": true
+  },
+  "menus": [
+    {
+      "id": "682fd82e-75e6-5161-a8f5-f7dd6ba185c2",
+      "name": "Bottled Water",
+      "category": "Drink",
+      "current_price": "20.00",
+      "available": true,
+      "food_cost": "7.00",
+      "packaging_cost": "2.00",
+      "other_variable_cost": "0.00",
+      "deduction_rate": "0.3000",
+      "cost_source": "assumption",
+      "estimated_contribution": "5.00"
+    },
+    {
+      "id": "374e83da-1d70-59ac-9643-cac652af136f",
+      "name": "Chicken Rice",
+      "category": "Rice",
+      "current_price": "79.00",
+      "available": true,
+      "food_cost": "35.00",
+      "packaging_cost": "4.00",
+      "other_variable_cost": "0.00",
+      "deduction_rate": "0.3000",
+      "cost_source": "assumption",
+      "estimated_contribution": "16.30"
+    },
+    {
+      "id": "e812d0ca-1086-5e80-814d-00a26f902093",
+      "name": "Pad Krapow",
+      "category": "Rice",
+      "current_price": "89.00",
+      "available": true,
+      "food_cost": "42.00",
+      "packaging_cost": "4.00",
+      "other_variable_cost": "0.00",
+      "deduction_rate": "0.3000",
+      "cost_source": "assumption",
+      "estimated_contribution": "16.30"
+    },
+    {
+      "id": "59ec1d8b-230a-5245-9290-fbe76acb4929",
+      "name": "Pad Thai",
+      "category": "Noodles",
+      "current_price": "95.00",
+      "available": true,
+      "food_cost": "45.00",
+      "packaging_cost": "4.00",
+      "other_variable_cost": "0.00",
+      "deduction_rate": "0.3000",
+      "cost_source": "assumption",
+      "estimated_contribution": "17.50"
+    },
+    {
+      "id": "239f5730-570f-523b-aaf1-8baab2b15365",
+      "name": "Thai Iced Tea",
+      "category": "Drink",
+      "current_price": "35.00",
+      "available": true,
+      "food_cost": "12.00",
+      "packaging_cost": "3.00",
+      "other_variable_cost": "0.00",
+      "deduction_rate": "0.3000",
+      "cost_source": "assumption",
+      "estimated_contribution": "9.50"
+    },
+    {
+      "id": "b6a14b5e-50be-52cc-a56d-306653b402c6",
+      "name": "Tom Yum Soup",
+      "category": "Soup",
+      "current_price": "109.00",
+      "available": true,
+      "food_cost": "54.00",
+      "packaging_cost": "5.00",
+      "other_variable_cost": "0.00",
+      "deduction_rate": "0.3000",
+      "cost_source": "assumption",
+      "estimated_contribution": "17.30"
+    }
+  ],
+  "source": "Westrong Kitchen deterministic synthetic seed, 2026-11-07"
+}

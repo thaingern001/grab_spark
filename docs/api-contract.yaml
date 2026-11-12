@@ -1,0 +1,465 @@
+openapi: 3.1.0
+info:
+  title: Grab One Click concept API
+  version: 1.0.0-design
+  description: Unofficial concept prototype using synthetic data. All amounts are decimal strings in THB. Dates use Asia/Bangkok business boundaries; timestamps are UTC ISO 8601. All date ranges are inclusive, require from <= to, and are limited to 366 days. Authenticated reads require owner or viewer role; writes require owner role and CSRF protection. Resource IDs are always resolved within the authenticated merchant scope. Invalid input is 400, authentication failure 401, role failure 403, absent or out-of-scope resource 404, and state/revision conflict 409. Missing scenario inputs produce null calculated estimates and block approval.
+servers:
+  - url: /api/v1
+security:
+  - DemoSession: []
+components:
+  securitySchemes:
+    DemoSession:
+      type: apiKey
+      in: cookie
+      name: demo_session
+      description: Local development only; hosted implementation uses secure authenticated session and CSRF token on writes.
+  schemas:
+    Money:
+      type: string
+      pattern: '^-?[0-9]+\.[0-9]{2}$'
+      examples: ['16.30']
+    Rate:
+      type: string
+      pattern: '^0\.[0-9]{4}$|^1\.0000$'
+      examples: ['0.3000']
+    Error:
+      type: object
+      required: [error, request_id]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code: {type: string}
+            message: {type: string}
+            details: {type: object, additionalProperties: true}
+        request_id: {type: string}
+    Merchant:
+      type: object
+      required: [id, name, business_type, currency, timezone, synthetic]
+      properties:
+        id: {type: string, format: uuid}
+        name: {type: string}
+        business_type: {type: string}
+        currency: {const: THB}
+        timezone: {const: Asia/Bangkok}
+        synthetic: {const: true}
+    SalesSummary:
+      type: object
+      required: [from, to, gmv, merchant_revenue, estimated_contribution, orders, aov, prior_gmv, synthetic]
+      properties:
+        from: {type: string, format: date}
+        to: {type: string, format: date}
+        gmv: {$ref: '#/components/schemas/Money'}
+        merchant_revenue: {$ref: '#/components/schemas/Money'}
+        estimated_contribution: {$ref: '#/components/schemas/Money'}
+        orders: {type: integer, minimum: 0}
+        aov: {anyOf: [{$ref: '#/components/schemas/Money'}, {type: 'null'}]}
+        prior_gmv: {$ref: '#/components/schemas/Money'}
+        synthetic: {const: true}
+    MenuPerformance:
+      type: object
+      required: [menu_item_id, name, units, gmv, estimated_contribution]
+      properties:
+        menu_item_id: {type: string, format: uuid}
+        name: {type: string}
+        units: {type: integer, minimum: 0}
+        gmv: {$ref: '#/components/schemas/Money'}
+        estimated_contribution: {$ref: '#/components/schemas/Money'}
+    MenuItem:
+      type: object
+      required: [id, name, category, current_price, available, food_cost, packaging_cost, other_variable_cost, deduction_rate, cost_source, estimated_contribution]
+      properties:
+        id: {type: string, format: uuid}
+        name: {type: string}
+        category: {type: string}
+        current_price: {$ref: '#/components/schemas/Money'}
+        available: {type: boolean}
+        food_cost: {anyOf: [{$ref: '#/components/schemas/Money'}, {type: 'null'}]}
+        packaging_cost: {anyOf: [{$ref: '#/components/schemas/Money'}, {type: 'null'}]}
+        other_variable_cost: {anyOf: [{$ref: '#/components/schemas/Money'}, {type: 'null'}]}
+        deduction_rate: {anyOf: [{$ref: '#/components/schemas/Rate'}, {type: 'null'}]}
+        cost_source: {enum: [synthetic_history, merchant_confirmed, assumption, missing]}
+        estimated_contribution: {anyOf: [{$ref: '#/components/schemas/Money'}, {type: 'null'}]}
+    Mission:
+      type: object
+      required: [id, title, rationale, intended_outcome, status, trial_days, current_revision, approved_revision, synthetic, events]
+      properties:
+        id: {type: string, format: uuid}
+        title: {type: string}
+        rationale: {type: string}
+        intended_outcome: {type: string}
+        status: {enum: [proposed, approved, running, completed, reviewed, rejected, cancelled]}
+        trial_days: {type: integer, minimum: 1, maximum: 30}
+        current_revision: {type: integer, minimum: 1}
+        approved_revision: {type: [integer, 'null']}
+        approved_strategy_id: {type: [string, 'null'], enum: [bundle, discount, advertising, null]}
+        approved_model_version: {type: [string, 'null']}
+        synthetic: {const: true}
+        events:
+          type: array
+          items:
+            type: object
+            required: [to_status, source, occurred_at]
+            properties:
+              from_status: {type: [string, 'null']}
+              to_status: {type: string}
+              source: {enum: [seed, merchant, simulation]}
+              occurred_at: {type: string, format: date-time}
+    ScenarioInputSource:
+      type: object
+      required: [source_kind]
+      properties:
+        source_kind: {enum: [synthetic_history, merchant_confirmed, assumption]}
+        source_note: {type: [string, 'null']}
+        confirmed_at: {type: [string, 'null'], format: date-time}
+    ScenarioInputSources:
+      type: object
+      required: [unit_price, food_cost, packaging_cost, other_variable_cost, deduction_rate, merchant_discount]
+      properties:
+        unit_price: {$ref: '#/components/schemas/ScenarioInputSource'}
+        food_cost: {$ref: '#/components/schemas/ScenarioInputSource'}
+        packaging_cost: {$ref: '#/components/schemas/ScenarioInputSource'}
+        other_variable_cost: {$ref: '#/components/schemas/ScenarioInputSource'}
+        deduction_rate: {$ref: '#/components/schemas/ScenarioInputSource'}
+        merchant_discount: {$ref: '#/components/schemas/ScenarioInputSource'}
+    ScenarioValues:
+      type: object
+      required: [label, unit_price, food_cost, packaging_cost, other_variable_cost, deduction_rate, merchant_discount]
+      properties:
+        label: {type: string, minLength: 1, maxLength: 100}
+        unit_price: {$ref: '#/components/schemas/Money'}
+        food_cost: {anyOf: [{$ref: '#/components/schemas/Money'}, {type: 'null'}]}
+        packaging_cost: {anyOf: [{$ref: '#/components/schemas/Money'}, {type: 'null'}]}
+        other_variable_cost: {anyOf: [{$ref: '#/components/schemas/Money'}, {type: 'null'}]}
+        deduction_rate: {anyOf: [{$ref: '#/components/schemas/Rate'}, {type: 'null'}]}
+        merchant_discount: {anyOf: [{$ref: '#/components/schemas/Money'}, {type: 'null'}]}
+    ScenarioArm:
+      allOf:
+        - {$ref: '#/components/schemas/ScenarioValues'}
+        - type: object
+          required: [sources, deduction_amount, merchant_revenue, estimated_contribution]
+          properties:
+            sources: {$ref: '#/components/schemas/ScenarioInputSources'}
+            deduction_amount: {anyOf: [{$ref: '#/components/schemas/Money'}, {type: 'null'}]}
+            merchant_revenue: {anyOf: [{$ref: '#/components/schemas/Money'}, {type: 'null'}]}
+            estimated_contribution: {anyOf: [{$ref: '#/components/schemas/Money'}, {type: 'null'}]}
+    ScenarioComparison:
+      type: object
+      required: [mission_id, revision, baseline, proposed, contribution_difference, assumptions]
+      properties:
+        mission_id: {type: string, format: uuid}
+        revision: {type: integer, minimum: 1}
+        baseline: {$ref: '#/components/schemas/ScenarioArm'}
+        proposed: {$ref: '#/components/schemas/ScenarioArm'}
+        contribution_difference: {anyOf: [{$ref: '#/components/schemas/Money'}, {type: 'null'}]}
+        assumptions:
+          type: array
+          items: {type: string}
+    StrategyCase:
+      type: object
+      required: [strategy_id, type, title, description, eligible, model_version, estimated_units, unit_contribution, estimated_7d_contribution, estimated_difference, risk_score, risk_dimensions, risk_factors]
+      properties:
+        strategy_id: {enum: [bundle, discount, advertising]}
+        type: {enum: [bundle, discount, advertising]}
+        title: {type: string}
+        description: {type: string}
+        eligible: {type: boolean}
+        model_version: {type: string}
+        estimated_units: {type: integer, minimum: 0}
+        unit_contribution: {$ref: '#/components/schemas/Money'}
+        estimated_7d_contribution: {$ref: '#/components/schemas/Money'}
+        estimated_difference: {$ref: '#/components/schemas/Money'}
+        platform_deduction_total: {$ref: '#/components/schemas/Money'}
+        merchant_discount_total: {$ref: '#/components/schemas/Money'}
+        variable_cost_total: {$ref: '#/components/schemas/Money'}
+        volume_breakdown: {type: object, description: Retained baseline, strategy, substituted baseline, and incremental order counts}
+        risk_score: {type: integer, minimum: 0, maximum: 100}
+        risk_dimensions: {type: object, additionalProperties: {type: integer, minimum: 0, maximum: 100}}
+        risk_factors: {type: array, items: {type: string}}
+    StrategyEvaluation:
+      type: object
+      required: [mission_id, scenario_revision, evaluation_revision, model_version, trial_days, baseline, assumptions, assumption_details, risk_methodology, provenance, recommended_strategy_id, recommendation_reason, strategies]
+      properties:
+        mission_id: {type: string, format: uuid}
+        scenario_revision: {type: integer, minimum: 1}
+        evaluation_revision: {type: integer, minimum: 1}
+        model_version: {type: string}
+        trial_days: {type: integer, minimum: 1}
+        baseline: {type: object, description: Seven-day synthetic baseline units, GMV, merchant revenue, and contribution}
+        assumptions: {type: object, description: Editable synthetic volumes, demand response, merchant discount, and ad spend}
+        assumption_details: {type: object, description: Value, unit, source, explanation, confirmation, and editability for each strategy assumption including fixed illustrative discount redemption}
+        risk_methodology: {type: string, description: Illustrative unvalidated model disclosure; score formula and recommendation rule are unchanged}
+        provenance: {type: string}
+        recommended_strategy_id: {enum: [bundle, discount, advertising]}
+        recommendation_reason: {type: string}
+        strategies: {type: array, minItems: 3, maxItems: 3, items: {$ref: '#/components/schemas/StrategyCase'}}
+    OutcomeArm:
+      type: object
+      required: [period_start, period_end, units, gmv, merchant_revenue, estimated_contribution]
+      properties:
+        period_start: {type: string, format: date}
+        period_end: {type: string, format: date}
+        units: {type: integer, minimum: 0}
+        gmv: {$ref: '#/components/schemas/Money'}
+        merchant_revenue: {$ref: '#/components/schemas/Money'}
+        estimated_contribution: {$ref: '#/components/schemas/Money'}
+    Outcome:
+      type: object
+      required: [mission_id, simulated, simulation_version, baseline, trial, learning_summary, next_step_guidance]
+      properties:
+        mission_id: {type: string, format: uuid}
+        simulated: {const: true}
+        simulation_version: {type: string}
+        baseline: {$ref: '#/components/schemas/OutcomeArm'}
+        trial: {$ref: '#/components/schemas/OutcomeArm'}
+        learning_summary: {type: string}
+        next_step_guidance: {type: string}
+  responses:
+    Unauthorized: {description: Missing or invalid session, content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}}
+    Forbidden: {description: Authenticated user lacks owner role, content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}}
+    NotFound: {description: Resource absent or outside merchant scope, content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}}
+    Invalid: {description: Invalid input, content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}}
+    Conflict: {description: Revision or state conflict, content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}}
+    RateLimited: {description: Rate limit exceeded, content: {application/json: {schema: {$ref: '#/components/schemas/Error'}}}}
+paths:
+  /merchants/me:
+    get:
+      operationId: getMerchant
+      summary: Current authenticated merchant
+      responses:
+        '200': {description: Merchant, content: {application/json: {schema: {$ref: '#/components/schemas/Merchant'}}}}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+  /dashboard:
+    get:
+      operationId: getDashboard
+      summary: Concise today's summary, closed-month trend, top three items, and one daily opportunity
+      responses:
+        '200':
+          description: Dashboard
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [today, monthly_trend, top_items, opportunity, synthetic]
+                properties:
+                  today: {$ref: '#/components/schemas/SalesSummary'}
+                  monthly_trend: {type: array, items: {$ref: '#/components/schemas/SalesSummary'}}
+                  top_items: {type: array, items: {$ref: '#/components/schemas/MenuPerformance'}}
+                  opportunity: {anyOf: [{$ref: '#/components/schemas/Mission'}, {type: 'null'}]}
+                  synthetic: {const: true}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+  /analytics/sales:
+    get:
+      operationId: getSales
+      summary: Completed-order sales and prior equal-length period; viewer or owner
+      parameters:
+        - {name: from, in: query, required: true, schema: {type: string, format: date}}
+        - {name: to, in: query, required: true, schema: {type: string, format: date}}
+        - {name: granularity, in: query, schema: {enum: [day, month], default: day}}
+      responses:
+        '200':
+          description: Aggregate and series
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [summary, series]
+                properties:
+                  summary: {$ref: '#/components/schemas/SalesSummary'}
+                  series: {type: array, items: {$ref: '#/components/schemas/SalesSummary'}}
+        '400': {$ref: '#/components/responses/Invalid'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '429': {$ref: '#/components/responses/RateLimited'}
+  /analytics/menus:
+    get:
+      operationId: getMenuPerformance
+      summary: Completed-order item rankings; viewer or owner
+      parameters:
+        - {name: from, in: query, required: true, schema: {type: string, format: date}}
+        - {name: to, in: query, required: true, schema: {type: string, format: date}}
+        - {name: limit, in: query, schema: {type: integer, minimum: 1, maximum: 50, default: 10}}
+      responses:
+        '200': {description: Ranked items, content: {application/json: {schema: {type: array, items: {$ref: '#/components/schemas/MenuPerformance'}}}}}
+        '400': {$ref: '#/components/responses/Invalid'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+  /menus:
+    get:
+      operationId: getMenus
+      summary: Current menu and cost assumption; viewer or owner
+      responses:
+        '200': {description: Menu, content: {application/json: {schema: {type: array, items: {$ref: '#/components/schemas/MenuItem'}}}}}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+  /missions:
+    get:
+      operationId: listMissions
+      summary: Merchant's missions; viewer or owner
+      parameters:
+        - {name: status, in: query, schema: {enum: [proposed, approved, running, completed, reviewed, rejected, cancelled]}}
+      responses:
+        '200': {description: Missions, content: {application/json: {schema: {type: array, items: {$ref: '#/components/schemas/Mission'}}}}}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+  /missions/{id}:
+    parameters:
+      - {name: id, in: path, required: true, schema: {type: string, format: uuid}}
+    get:
+      operationId: getMission
+      summary: Scoped mission detail and events; viewer or owner
+      responses:
+        '200': {description: Mission, content: {application/json: {schema: {$ref: '#/components/schemas/Mission'}}}}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /missions/{id}/scenarios:
+    parameters:
+      - {name: id, in: path, required: true, schema: {type: string, format: uuid}}
+    get:
+      operationId: getScenarios
+      summary: Latest baseline/proposal with server-calculated values; viewer or owner
+      responses:
+        '200': {description: Comparison, content: {application/json: {schema: {$ref: '#/components/schemas/ScenarioComparison'}}}}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '404': {$ref: '#/components/responses/NotFound'}
+    put:
+      operationId: saveScenarios
+      summary: Save a new scenario revision while proposed; changed fields become unconfirmed, unchanged confirmed fields retain provenance; owner only, CSRF protected
+      parameters:
+        - {name: If-Match, in: header, required: true, schema: {type: integer, minimum: 1}, description: Current mission revision}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [baseline, proposed]
+              properties:
+                baseline: {$ref: '#/components/schemas/ScenarioValues'}
+                proposed: {$ref: '#/components/schemas/ScenarioValues'}
+      responses:
+        '200': {description: New revision and recalculated comparison, content: {application/json: {schema: {$ref: '#/components/schemas/ScenarioComparison'}}}}
+        '400': {$ref: '#/components/responses/Invalid'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+  /missions/{id}/approve:
+    parameters:
+      - {name: id, in: path, required: true, schema: {type: string, format: uuid}}
+    post:
+      operationId: approveMission
+      summary: Explicit simulated-trial approval and financial-input confirmation for current reviewed revision; owner only, CSRF protected
+      parameters:
+        - {name: Idempotency-Key, in: header, required: true, schema: {type: string, minLength: 8, maxLength: 100}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reviewed_revision, confirm_material_inputs, acknowledge_simulation]
+              properties:
+                reviewed_revision: {type: integer, minimum: 1}
+                evaluation_revision: {type: integer, minimum: 1, description: Required when selecting a multi-strategy recommendation}
+                selected_strategy_id: {enum: [bundle, discount, advertising], description: Must equal the current lowest-risk eligible strategy; omitted for legacy approved missions}
+                confirm_material_inputs: {const: true}
+                acknowledge_simulation: {const: true}
+      responses:
+        '200': {description: Approved mission (or retry with the same key and identical request fingerprint); row lock serializes approval with scenario saves and source confirmations are stamped in the approval transaction, content: {application/json: {schema: {$ref: '#/components/schemas/Mission'}}}}
+        '400': {$ref: '#/components/responses/Invalid'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+  /missions/{id}/simulate:
+    parameters:
+      - {name: id, in: path, required: true, schema: {type: string, format: uuid}}
+    post:
+      operationId: simulateMission
+      summary: Generate a deterministic simulated outcome for an approved mission; owner only, CSRF protected
+      responses:
+        '200': {description: Completed mission, content: {application/json: {schema: {$ref: '#/components/schemas/Mission'}}}}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+  /missions/{id}/transitions:
+    parameters:
+      - {name: id, in: path, required: true, schema: {type: string, format: uuid}}
+    post:
+      operationId: transitionMission
+      summary: Review a completed outcome, reject a proposal, or cancel an approved/running simulation; owner only, CSRF protected
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [action]
+              properties:
+                action: {enum: [review, reject, cancel]}
+                reason: {type: [string, 'null'], maxLength: 500}
+      responses:
+        '200': {description: Updated mission and event history, content: {application/json: {schema: {$ref: '#/components/schemas/Mission'}}}}
+        '400': {$ref: '#/components/responses/Invalid'}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+  /missions/{id}/outcome:
+    parameters:
+      - {name: id, in: path, required: true, schema: {type: string, format: uuid}}
+    get:
+      operationId: getOutcome
+      summary: Simulated outcome, if available; viewer or owner
+      responses:
+        '200': {description: Outcome, content: {application/json: {schema: {$ref: '#/components/schemas/Outcome'}}}}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /missions/{id}/strategies:
+    parameters:
+      - {name: id, in: path, required: true, schema: {type: string, format: uuid}}
+    get:
+      operationId: evaluateMissionStrategies
+      summary: Merchant-scoped deterministic Bundle, Discount, and Advertising comparison
+      description: Returns current scenario and evaluation revisions, baseline seven-day totals, editable synthetic assumptions, provenance, three eligible cases with Decimal financial totals and 0-100 modeled risk scores/dimensions, and the lowest-risk recommendation. Scores are decision-support indicators, not probabilities.
+      responses:
+        '200': {description: Strategy evaluation, content: {application/json: {schema: {$ref: '#/components/schemas/StrategyEvaluation'}}}}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '404': {$ref: '#/components/responses/NotFound'}
+  /missions/{id}/strategies/assumptions:
+    parameters:
+      - {name: id, in: path, required: true, schema: {type: string, format: uuid}}
+    put:
+      operationId: updateMissionStrategyAssumptions
+      summary: Owner-only, CSRF-protected edit with optimistic evaluation revision
+      parameters:
+        - {name: If-Match, in: header, required: true, schema: {type: integer, minimum: 1}}
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [baseline_units, bundle_units, discount_amount, discount_demand_lift, advertising_spend, advertising_incremental_orders]
+              properties:
+                baseline_units: {type: integer, minimum: 1}
+                bundle_units: {type: integer, minimum: 1}
+                discount_amount: {type: string, description: Nonnegative Decimal baht per order}
+                discount_demand_lift: {type: string, description: Decimal fraction from 0 to 2}
+                advertising_spend: {type: string, description: Nonnegative Decimal baht for seven days}
+                advertising_incremental_orders: {type: integer, minimum: 0}
+      responses:
+        '200': {description: New strategy evaluation and evaluation revision, content: {application/json: {schema: {$ref: '#/components/schemas/StrategyEvaluation'}}}}
+        '400': {$ref: '#/components/responses/Invalid'}
+        '403': {$ref: '#/components/responses/Forbidden'}
+        '404': {$ref: '#/components/responses/NotFound'}
+        '409': {$ref: '#/components/responses/Conflict'}
+  /demo/reset:
+    post:
+      operationId: resetDisposableVisualDemo
+      summary: Reset only the local disposable visual preview to the deterministic seed
+      description: Owner and CSRF required. The backend also requires APP_ENV=local, the exact grabspark_a1_visual database on a loopback host, and the seeded Westrong Kitchen owner. Unavailable on the main database. Deletes preview-only synthetic mission history and recreates the original seed in one transaction.
+      responses:
+        '200': {description: Preview reset; returns reset, seed_version, mission_id and proposed mission_status}
+        '401': {$ref: '#/components/responses/Unauthorized'}
+        '403': {$ref: '#/components/responses/Forbidden'}
