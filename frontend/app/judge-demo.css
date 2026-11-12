@@ -2,7 +2,12 @@
 .judge-topline { display:flex; align-items:center; justify-content:space-between; gap:16px; width:min(960px,100%); margin:0 0 12px; color:#16452a; font-size:13px; font-weight:800; }
 .judge-topline span,.judge-topline button { display:inline-flex; align-items:center; gap:7px; }
 .judge-topline button { min-height:36px; border:1px solid #b7d4bf; border-radius:9px; background:#fff; padding:7px 11px; color:#16452a; font-size:12px; font-weight:750; cursor:pointer; }
-.judge-frame { display:flex; flex-direction:column; width:min(430px,100%); height:min(920px,calc(100dvh - 96px)); min-height:min(610px,calc(100dvh - 32px)); overflow:hidden; border:1px solid #d9e1db; border-radius:28px; background:#f7f8f7; box-shadow:0 24px 70px #203b282e; }
+.judge-frame { position:relative; display:flex; flex-direction:column; width:min(430px,100%); height:min(920px,calc(100dvh - 96px)); min-height:min(610px,calc(100dvh - 32px)); overflow:hidden; border:1px solid #d9e1db; border-radius:28px; background:#f7f8f7; box-shadow:0 24px 70px #203b282e; }
+.judge-frame:has(.judge-recommendation)::before { position:absolute; inset:0; z-index:5; background:#183426a6; content:""; }
+.judge-frame:has(.judge-recommendation) .judge-header,.judge-frame:has(.judge-recommendation) .judge-ribbon,.judge-frame:has(.judge-recommendation) .judge-bottom-nav { pointer-events:none; }
+.judge-frame:has(.judge-recommendation) .judge-main { overflow:hidden; }
+.judge-frame:has(.judge-recommendation) .judge-recommendation { position:absolute; inset:12% 0 0; z-index:6; overflow-y:auto; padding-bottom:250px; border:1px solid #b7d7c0; border-bottom:0; border-radius:25px 25px 0 0; background:#fff; box-shadow:0 -12px 35px #14291b26; scrollbar-width:thin; }
+.judge-frame:has(.judge-recommendation) .judge-approval-footer { position:absolute; right:0; bottom:0; left:0; z-index:7; border-radius:0 0 27px 27px; }
 .judge-header { flex:0 0 auto; height:66px; display:flex; align-items:center; justify-content:space-between; padding:0 18px; background:#fff; border-bottom:1px solid #e9eee9; }
 .judge-brand { display:flex; align-items:center; gap:9px; border:0; padding:0; color:var(--green-deep); background:none; text-align:left; cursor:pointer; }
 .judge-brand > span:last-child { display:flex; flex-direction:column; }
