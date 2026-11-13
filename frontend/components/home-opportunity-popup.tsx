@@ -106,6 +106,8 @@ export function HomeOpportunityPopup({ mission, initialComparison, initialEvalua
     setBusy(true); setError(""); approvalKey.current ??= crypto.randomUUID();
     try {
       await merchantRequest<Mission>(`${path}/approve`, { method: "POST", idempotencyKey: approvalKey.current, body: { reviewed_revision: evaluation.scenario_revision, evaluation_revision: evaluation.evaluation_revision, selected_strategy_id: selected, confirm_material_inputs: true, acknowledge_simulation: true } });
+      try { await merchantRequest<Mission>(`${path}/simulate`, { method: "POST" }); }
+      catch { /* The mission page retries a pending simulation and shows any backend error. */ }
       router.push(path); router.refresh();
     } catch (cause) {
       if (cause instanceof MerchantApiError && cause.status === 409) await refreshAfterConflict("Mission data changed. Review the latest evaluation and confirm again.");
@@ -144,7 +146,7 @@ export function HomeOpportunityPopup({ mission, initialComparison, initialEvalua
         </>}
         {error && <div className="form-error" role="alert">{error}</div>}
       </div>
-      <div className="strategy-sheet-footer">{view === "overview" ? <><p>{mission.trial_days}-day simulation · No real promotion or ad · Data revision {evaluation.scenario_revision}/{evaluation.evaluation_revision}</p><label className="consent-row"><input type="checkbox" checked={confirmed} onChange={event => setConfirmed(event.target.checked)} /><span>I reviewed the prices, costs, volumes, spending, and assumptions.</span></label><label className="consent-row"><input type="checkbox" checked={simulationConfirmed} onChange={event => setSimulationConfirmed(event.target.checked)} /><span>I understand this is a simulation and no real campaign will be published.</span></label><button className="primary-button" disabled={!confirmed || !simulationConfirmed || busy} onClick={approve}>{busy ? "Approving…" : `Approve and simulate ${labels[selected]} for ${mission.trial_days} days`} <ArrowRight size={16} /></button></> : <button className="primary-button" onClick={() => show("overview")}>Back to review and approval <ArrowRight size={16} /></button>}</div>
+      <div className="strategy-sheet-footer">{view === "overview" ? <><p>{mission.trial_days}-day simulation · No real promotion or ad · Data revision {evaluation.scenario_revision}/{evaluation.evaluation_revision}</p><label className="consent-row"><input type="checkbox" checked={confirmed} onChange={event => setConfirmed(event.target.checked)} /><span>I reviewed the prices, costs, volumes, spending, and assumptions.</span></label><label className="consent-row"><input type="checkbox" checked={simulationConfirmed} onChange={event => setSimulationConfirmed(event.target.checked)} /><span>I understand this is a simulation and no real campaign will be published.</span></label><button className="primary-button" disabled={!confirmed || !simulationConfirmed || busy} onClick={approve}>{busy ? "Opening result…" : `Confirm ${labels[selected]} and view simulated result`} <ArrowRight size={16} /></button></> : <button className="primary-button" onClick={() => show("overview")}>Back to review and approval <ArrowRight size={16} /></button>}</div>
     </div>
   </div>, phoneFrame);
 }

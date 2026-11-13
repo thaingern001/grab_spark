@@ -25,7 +25,7 @@ try {
     if (await dialog.getByText("AI-generated concept preview", { exact: false }).count() !== 3) throw new Error(`Concept labels missing at ${width}`);
     if (await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)) throw new Error(`Horizontal document scroll at ${width}`);
     if (await dialog.locator(".strategy-sheet-body").evaluate(el => el.scrollWidth > el.clientWidth)) throw new Error(`Horizontal sheet scroll at ${width}`);
-    if (await dialog.getByRole("button", { name: /Approve and simulate/ }).isEnabled()) throw new Error("Approval enabled without consent");
+    if (await dialog.getByRole("button", { name: /Confirm Bundle and view simulated result/ }).isEnabled()) throw new Error("Approval enabled without consent");
     if (width === 390) await page.screenshot({ path: resolve(shots, "multi-popup-390.png") });
     await dialog.getByRole("button", { name: "View details and compare" }).click();
     await dialog.getByRole("heading", { name: "Compare assumptions" }).waitFor();
@@ -40,7 +40,7 @@ try {
     await dialog.waitFor({ state: "hidden" });
     if (width === 390) {
       await page.screenshot({ path: resolve(shots, "visual-home-390.png") });
-      await page.locator(".home-recommendation-link").click();
+      await page.getByRole("link", { name: "View recommendation" }).click();
       await dialog.waitFor();
       await page.keyboard.press("Escape");
       await dialog.waitFor({ state: "hidden" });
@@ -91,15 +91,22 @@ try {
   let approvals = 0;
   page.on("request", request => { if (/\/api\/merchant\/missions\/[^/]+\/approve$/.test(request.url())) approvals += 1; });
   await page.route("**/api/merchant/missions/*/simulate", async route => { await new Promise(resolve => setTimeout(resolve, 1800)); await route.continue(); });
-  await dialog.getByRole("button", { name: /Approve and simulate/ }).click();
+  await dialog.getByRole("button", { name: /Confirm Bundle and view simulated result/ }).click();
   await page.waitForURL(/\/missions\/[0-9a-f-]+/);
-  await page.getByRole("heading", { name: "Generating simulated result" }).waitFor();
-  await page.screenshot({ path: resolve(shots, "multi-processing-390.png") });
   await page.getByRole("heading", { name: /7-day simulated result/ }).waitFor({ timeout: 20000 });
+  await page.getByRole("heading", { name: "Day 1 pending" }).waitFor();
+  if (!(await page.locator(".actual-progress").innerText()).includes("0 of 7 live days completed")) throw new Error("Actual progress falsely advanced");
   if (approvals !== 1) throw new Error(`Expected one approval request, got ${approvals}`);
   const result = await page.locator("main").innerText();
   if (!result.includes("Bundle") || !result.includes("40 modeled orders") || !result.includes("simulation")) throw new Error(`Missing result data: ${result.slice(0, 600)}`);
   await page.screenshot({ path: resolve(shots, "multi-result-390.png") });
+  await page.getByRole("button", { name: "Open mission chat" }).click();
+  await page.getByRole("heading", { name: "Bundle mission chat" }).waitFor();
+  await page.getByRole("textbox", { name: "Message MAI about this mission" }).fill("What is the live status?");
+  await page.getByRole("button", { name: "Send message" }).click();
+  await page.getByText(/0 live days completed/).waitFor();
+  await page.screenshot({ path: resolve(shots, "multi-mission-agent-390.png") });
+  await page.getByRole("button", { name: "Simulated result" }).click();
   await page.reload({ waitUntil: "networkidle" });
   await page.getByRole("heading", { name: /7-day simulated result/ }).waitFor();
   await page.getByRole("button", { name: /Mark result as reviewed/ }).click();

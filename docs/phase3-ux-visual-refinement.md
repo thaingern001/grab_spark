@@ -29,7 +29,7 @@ All prompts excluded text, prices, percentages, brand marks, watermarks, and UI.
 - Backend: 26 tests passed; one existing Starlette/httpx deprecation warning.
 - Frontend: production build and TypeScript passed.
 - Playwright: 320, 375, 390, 430 px; three loaded previews and visible labels; no horizontal overflow; fallback for unavailable images; comparison and expandable detail; popup dismissal, Home reopening and Escape; consent gating and preservation through optional details; cost and assumption edits through backend; one approval request; processing, persisted result, review transition, and return Home.
-- Screenshots: [Home](screenshots/strategy/visual-home-390.png), [popup](screenshots/strategy/visual-popup-390.png), [320 px popup](screenshots/strategy/visual-popup-320.png), [details](screenshots/strategy/multi-detail-390.png), [processing](screenshots/strategy/multi-processing-390.png), [result](screenshots/strategy/multi-result-390.png), [reviewed](screenshots/strategy/visual-reviewed-390.png).
+- Screenshots: [Home](screenshots/strategy/visual-home-390.png), [popup](screenshots/strategy/visual-popup-390.png), [320 px popup](screenshots/strategy/visual-popup-320.png), [details](screenshots/strategy/multi-detail-390.png), [result and actual status](screenshots/strategy/multi-result-390.png), [MAI mission chat](screenshots/strategy/multi-mission-agent-390.png), [reviewed](screenshots/strategy/visual-reviewed-390.png).
 
 ## Limits
 

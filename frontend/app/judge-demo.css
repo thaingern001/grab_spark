@@ -124,10 +124,6 @@
 .judge-page .strategy-visual-caption { font-size:12px; }
 .judge-page .assumptions-details { margin:14px 0; padding:9px 12px; font-size:12px; }
 .judge-page .assumptions-details p { margin:7px 0; font-size:12px; }
-.judge-processing { text-align:center; }
-.judge-processing p { color:#4e6153; font-size:14px; }
-.judge-processing ol { display:grid; gap:12px; margin:24px 0; padding:0; text-align:left; list-style:none; }
-.judge-processing li { display:flex; align-items:center; gap:9px; color:#235132; font-size:14px; }
 .judge-status { display:flex; align-items:center; gap:11px; margin:15px 0; padding:14px; border:1px solid #d2e7d7; border-radius:12px; background:#eef8f0; color:#0a7139; }
 .judge-status span { display:flex; flex-direction:column; gap:3px; }
 .judge-status small { color:#4a6551; font-size:12px; }

@@ -13,7 +13,7 @@
 - Backend: 26 automated tests passed. New tests cover three financial models, risk boundaries and tie/eligibility order, assumption revision and recalculation, stale approval, consent and selection, merchant isolation, immutable approved snapshot, idempotent approval, deterministic simulation, rollback on processing failure, and safe retry.
 - Frontend production build and TypeScript checks passed.
 - Playwright journey passed at 320, 375, 390, and 430 CSS px without horizontal document or bottom-sheet scroll. It verified all three strategies, optional detail/compare, dismissal persistence, backend assumption edit and recalculation, disabled approval before consent, one approval, backend simulation, and result persistence after reload.
-- Screenshots: [recommendation](screenshots/strategy/multi-popup-390.png), [comparison](screenshots/strategy/multi-compare-390.png), [detail](screenshots/strategy/multi-detail-390.png), [processing](screenshots/strategy/multi-processing-390.png), [result](screenshots/strategy/multi-result-390.png).
+- Screenshots: [recommendation](screenshots/strategy/multi-popup-390.png), [comparison](screenshots/strategy/multi-compare-390.png), [detail](screenshots/strategy/multi-detail-390.png), [result and actual status](screenshots/strategy/multi-result-390.png), [MAI mission chat](screenshots/strategy/multi-mission-agent-390.png).
 
 ## Known limits
 
