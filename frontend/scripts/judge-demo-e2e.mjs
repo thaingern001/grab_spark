@@ -113,6 +113,20 @@ try {
     await page.getByText("Result reviewed", { exact: true }).waitFor();
     if (name === "Bundle") await page.screenshot({ path: `${shots}/05-c1-reviewed.png` });
     await noOverflow(page, `${name} result`);
+    if (name === "Bundle") {
+      await page.getByRole("button", { name: "Quick actions" }).click();
+      await page.getByRole("navigation", { name: "Quick actions" }).getByRole("button", { name: "Connector" }).click();
+      await page.getByRole("button", { name: /ChatGPT.*Concept option/ }).click();
+      await page.getByRole("checkbox", { name: /Mission Outcomes — Read/ }).check();
+      await page.getByRole("button", { name: /Authorize simulated connection/ }).click();
+      await page.getByRole("button", { name: /Open simulated AI workspace/ }).click();
+      await page.getByRole("button", { name: /Ask simulated AI/ }).click();
+      const outcomeChart = page.getByRole("figure", { name: /Simulated seven-day contribution/ });
+      await outcomeChart.waitFor();
+      check((await outcomeChart.innerText()).includes("+฿304.00"), "Outcome chart does not use approved fixture values");
+      await outcomeChart.scrollIntoViewIfNeeded();
+      await page.screenshot({ path: `${shots}/14-c1-outcome-chart.png` });
+    }
     await page.getByRole("button", { name: "Reset demo" }).click();
     await page.getByRole("dialog", { name: "One Click recommendation" }).waitFor();
     await page.getByRole("dialog", { name: "One Click recommendation" }).getByRole("button", { name: "Merchant Home" }).click();
@@ -138,6 +152,12 @@ try {
   check(await page.locator(".judge-header").count() === 0, "Merchant shell remained inside AI workspace");
   await page.screenshot({ path: `${shots}/11-c2-chatgpt-welcome.png` });
   await page.getByRole("button", { name: /Ask simulated AI/ }).click();
+  const salesChart = page.getByRole("figure", { name: /Synthetic monthly gross merchandise value/ });
+  await salesChart.waitFor();
+  check(await salesChart.locator(".ai-sales-bars li").count() === 6, "Synthetic sales chart missing six months");
+  check((await salesChart.innerText()).includes("฿50,052.00"), "Sales chart headline does not use the snapshot");
+  await salesChart.scrollIntoViewIfNeeded();
+  await page.screenshot({ path: `${shots}/15-c2-sales-chart.png` });
   check((await page.locator(".judge-tool-list").innerText()).includes("Permission required"), "Restricted tool not blocked");
   check(await page.getByRole("heading", { name: "Top menu performance · synthetic" }).count() === 0, "Menu data exposed without permission");
   check(await page.locator(".judge-draft").count() === 0, "Draft appeared without menu permission");
@@ -164,6 +184,7 @@ try {
   await page.getByRole("checkbox", { name: /Sales Data — Read/ }).uncheck();
   await page.getByRole("button", { name: /Open simulated AI workspace/ }).click();
   check(await page.getByRole("heading", { name: "Sales summary · synthetic" }).count() === 0, "Removed permission still exposes sales");
+  check(await page.locator(".ai-insight-chart").count() === 0, "Sales chart remained visible after permission removal");
   check(await page.locator(".judge-draft").count() === 0, "Draft remained after required permission removal");
   await page.getByRole("button", { name: "Revoke access" }).click();
   await page.getByText("Access Revoked", { exact: true }).waitFor();
@@ -238,6 +259,8 @@ try {
     await page.getByRole("button", { name: /Open simulated AI workspace/ }).click();
     await page.getByRole("button", { name: /Ask simulated AI/ }).click();
     await noOverflow(page, `${width}px workspace`);
+    const chartFits = await page.locator(".ai-insight-chart").evaluate(chart => chart.scrollWidth <= chart.clientWidth + 1);
+    check(chartFits, `${width}px insight chart overflow`);
     const composerFits = await page.locator(".ai-chat-composer").evaluate(composer => composer.getBoundingClientRect().bottom <= innerHeight + 1);
     check(composerFits, `${width}px workspace composer clipped`);
     await context.close();
