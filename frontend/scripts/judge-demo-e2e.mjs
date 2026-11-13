@@ -19,8 +19,10 @@ async function setup(width = 390, height = 844) {
   const page = await context.newPage();
   page.on("pageerror", error => problems.push(error.message));
   page.on("console", message => { if (message.type() === "error") problems.push(message.text()); });
+  page.on("response", response => { if (response.url().includes("/_next/static/") && response.status() >= 400) problems.push(`Static asset ${response.status()}: ${response.url()}`); });
   page.on("request", request => { if (/127\.0\.0\.1:8000|localhost:8000|\/api\/merchant/.test(request.url())) problems.push(`Backend request: ${request.url()}`); });
   await page.goto(base);
+  check(await page.locator(".judge-frame").evaluate(element => getComputedStyle(element).display) === "flex", "Judge stylesheet did not load");
   const intro = page.getByRole("dialog", { name: "One Click recommendation" });
   await intro.waitFor();
   if (width === 390 && !capturedIntro) { await page.screenshot({ path: `${shots}/00a-judge-first-open.png` }); capturedIntro = true; }
@@ -99,6 +101,8 @@ try {
     if (name === "Bundle") await page.screenshot({ path: `${shots}/04-c1-results.png` });
     await page.getByRole("button", { name: "Open mission chat" }).click();
     await page.getByRole("heading", { name: `${name} mission chat` }).waitFor();
+    const chatGap = await page.evaluate(() => document.querySelector(".judge-main").getBoundingClientRect().bottom - document.querySelector(".mission-agent-composer").getBoundingClientRect().bottom);
+    check(chatGap >= 0 && chatGap <= 30, `${name} chat composer does not fit the viewport`);
     await page.getByRole("textbox", { name: "Message MAI about this mission" }).fill("What is the actual status?");
     await page.getByRole("button", { name: "Send message" }).click();
     await page.getByText(/0 live days completed/).waitFor();
@@ -217,6 +221,11 @@ try {
     await page.getByRole("checkbox", { name: /I understand this is a simulation/ }).check();
     await page.getByRole("button", { name: /Confirm Bundle and view simulated result/ }).click();
     await noOverflow(page, `${width}px results`);
+    await page.getByRole("button", { name: "Open mission chat" }).click();
+    await noOverflow(page, `${width}px mission chat`);
+    const responsiveChatGap = await page.evaluate(() => document.querySelector(".judge-main").getBoundingClientRect().bottom - document.querySelector(".mission-agent-composer").getBoundingClientRect().bottom);
+    check(responsiveChatGap >= 0 && responsiveChatGap <= 30, `${width}px mission chat composer clipped`);
+    await page.getByRole("button", { name: "Simulated result" }).click();
     await page.getByRole("button", { name: "Home", exact: true }).click();
     await page.getByRole("button", { name: "Quick actions" }).click();
     await page.getByRole("navigation", { name: "Quick actions" }).getByRole("button", { name: "Connector" }).click();

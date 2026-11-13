@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { ArrowRight, Send, Sparkles } from "lucide-react";
 
 type AgentFacts = {
@@ -24,16 +24,18 @@ export function ActualProgress({ days }: { days: number }) {
 export function AgentEntry({ onOpen }: { onOpen: () => void }) {
   return <section className="mission-agent-entry" aria-labelledby="mission-agent-entry-title">
     <span className="mission-agent-mark"><Sparkles size={21} /></span>
-    <div><h2 id="mission-agent-entry-title">Ask MAI about this mission</h2><p>Review the approved assumptions, modeled result, and next steps in an in-app demo chat.</p><small>Simulated agent · No live campaign data</small></div>
-    <button type="button" onClick={onOpen}>Open mission chat <ArrowRight size={17} /></button>
+    <h2 id="mission-agent-entry-title">Work with AI</h2>
+    <button type="button" onClick={onOpen} aria-label="Open mission chat">Open <ArrowRight size={17} /></button>
   </section>;
 }
 
 export function MissionAgentChat({ facts, onBack }: { facts: AgentFacts; onBack: () => void }) {
   const [draft, setDraft] = useState("");
+  const messagesRef = useRef<HTMLDivElement>(null);
   const [messages, setMessages] = useState<{ role: "merchant" | "agent"; text: string }[]>([
     { role: "agent", text: `I can help you review the approved ${facts.strategy} simulation. Its modeled 7-day contribution is ${facts.contribution}, a ${facts.difference} difference from baseline. No real trial has started.` },
   ]);
+  useEffect(() => { messagesRef.current?.scrollTo({ top: messagesRef.current.scrollHeight }); }, [messages.length]);
   function reply(prompt: string) {
     const question = prompt.toLowerCase();
     if (/actual|live|day|started|real|progress|status/.test(question)) return "Actual activity is at Day 1 pending: 0 live days completed. No real promotion or ad has been published, and there are no observed trial results.";
@@ -52,8 +54,8 @@ export function MissionAgentChat({ facts, onBack }: { facts: AgentFacts; onBack:
     <button type="button" className="mission-agent-back" onClick={onBack}>← Simulated result</button>
     <span className="mission-agent-kicker"><Sparkles size={16} /> MAI · IN-APP DEMO AGENT</span>
     <h1 id="mission-agent-title">{facts.strategy} mission chat</h1>
-    <p className="mission-agent-disclosure">Scripted prototype replies grounded in this mission&apos;s approved modeled result. No live AI service or real campaign data is connected.</p>
-    <div className="mission-agent-messages" aria-live="polite">{messages.map((message, index) => <div key={index} className={`mission-agent-message is-${message.role}`}><strong>{message.role === "agent" ? "MAI" : "You"}</strong><p>{message.text}</p></div>)}</div>
+    <p className="mission-agent-disclosure">Demo chat · No live AI or campaign data.</p>
+    <div ref={messagesRef} className="mission-agent-messages" aria-live="polite">{messages.map((message, index) => <div key={index} className={`mission-agent-message is-${message.role}`}><strong>{message.role === "agent" ? "MAI" : "You"}</strong><p>{message.text}</p></div>)}</div>
     <form className="mission-agent-composer" onSubmit={send}><label htmlFor="mission-agent-prompt">Message MAI about this mission</label><div><input id="mission-agent-prompt" value={draft} onChange={event => setDraft(event.target.value.slice(0, 500))} placeholder="Ask about status, risk, or next steps" maxLength={500} /><button type="submit" disabled={!draft.trim()} aria-label="Send message"><Send size={17} /></button></div></form>
   </section>;
 }

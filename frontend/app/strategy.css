@@ -232,22 +232,22 @@
 .actual-day-track { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:5px; margin:13px 0 0; padding:0; list-style:none; }
 .actual-day-track li { display:grid; place-items:center; min-width:0; min-height:30px; border:1px solid #c9d2d5; border-radius:8px; background:#fff; color:#687981; font-size:12px; font-weight:800; }
 .actual-day-track li.is-pending { border:2px solid #607582; color:#263f4d; background:#e6edef; }
-.mission-agent-entry { display:grid; grid-template-columns:34px minmax(0,1fr); gap:9px; margin-top:13px; padding:14px; border:1px solid #c9dfe1; border-radius:13px; background:#f2f9f9; }
+.mission-agent-entry { display:grid; grid-template-columns:32px minmax(0,1fr) auto; align-items:center; gap:9px; margin:10px 0 13px; padding:9px 11px; border:1px solid #c9dfe1; border-radius:13px; background:#f2f9f9; }
 .mission-agent-mark { display:grid; place-items:center; width:32px; height:32px; border-radius:10px; color:#0c6370; background:#dceff1; }
-.mission-agent-entry h2 { margin:0 0 5px; font-size:17px; font-weight:800; }
-.mission-agent-entry p { margin:0; color:#36555a; font-size:13px; line-height:1.4; }
-.mission-agent-entry small { display:block; margin-top:6px; color:#45616a; font-size:12px; }
-.mission-agent-entry button { grid-column:1/-1; display:flex; align-items:center; justify-content:space-between; min-height:43px; padding:0 11px; border:1px solid #0d7380; border-radius:9px; background:#fff; color:#0a5965; font-size:13px; font-weight:800; cursor:pointer; }
-.mission-agent-chat { padding:18px; }
+.mission-agent-entry h2,.judge-page .mission-agent-entry h2 { margin:0; font-size:16px; font-weight:800; }
+.mission-agent-entry button { display:flex; align-items:center; justify-content:center; gap:5px; min-height:38px; padding:0 10px; border:1px solid #0d7380; border-radius:9px; background:#fff; color:#0a5965; font-size:13px; font-weight:800; cursor:pointer; }
+.mission-agent-page { display:flex; flex-direction:column; height:100%; min-height:0; padding:0; }
+.mission-agent-chat { box-sizing:border-box; display:flex; flex-direction:column; flex:1 1 auto; min-height:0; height:100%; padding:14px 18px 12px; }
 .mission-agent-back { min-height:40px; padding:0; border:0; background:none; color:#096b37; font-size:13px; font-weight:800; cursor:pointer; }
-.mission-agent-kicker { display:flex; align-items:center; gap:6px; margin-top:14px; color:#0c6370; font-size:12px; font-weight:800; }
+.mission-agent-kicker { display:flex; align-items:center; gap:6px; margin-top:8px; color:#0c6370; font-size:12px; font-weight:800; }
 .mission-agent-chat h1 { margin:8px 0; font-size:23px; }
 .mission-agent-disclosure { margin:0; color:#49616a; font-size:12px; line-height:1.45; }
-.mission-agent-messages { display:grid; align-content:start; gap:10px; min-height:190px; margin:17px 0; }
+.mission-agent-messages { display:flex; align-items:flex-start; flex-direction:column; flex:1 1 auto; gap:10px; min-height:0; overflow-y:auto; margin:12px 0; scrollbar-width:thin; }
 .mission-agent-message { max-width:94%; padding:11px 12px; border-radius:12px; background:#e8f5f0; font-size:13px; line-height:1.45; }
-.mission-agent-message.is-merchant { justify-self:end; background:#e5edf5; }
+.mission-agent-message.is-merchant { align-self:flex-end; background:#e5edf5; }
 .mission-agent-message strong { font-size:12px; }
 .mission-agent-message p { margin:4px 0 0; }
+.mission-agent-composer { flex:0 0 auto; padding-top:8px; border-top:1px solid #e0e9e4; }
 .mission-agent-composer label { display:block; margin-bottom:7px; font-size:12px; font-weight:750; }
 .mission-agent-composer > div { display:flex; gap:6px; }
 .mission-agent-composer input { flex:1 1 auto; min-width:0; min-height:44px; padding:9px; border:1px solid #b7c9c1; border-radius:9px; font:inherit; font-size:13px; }

@@ -2,7 +2,7 @@
 
 ## 2C Interactive Judge Demo (standalone)
 
-The public judge build opens at `/` and contains two independent browser-only journeys: **C1 One Click** (discover → select → compare/details → consent → approve → simulate → review) and **C2 Connector** (choose a simulated client → grant read-only scopes → ask a prepared question → see only authorized synthetic results → review a draft → revoke). The merchant can reset either journey with the reset control in the header. State is scoped to the current browser tab via `sessionStorage` and survives refresh.
+The public judge build opens at `/` and contains two independent browser-only journeys: **C1 One Click** (discover → compare/details → consent → confirm → prepared simulated result → optional mission chat → review) and **C2 Connector** (choose a simulated client → grant read-only scopes → ask a prepared question → see only authorized synthetic results → review a draft → revoke). The merchant can reset either journey with the reset control in the header. State is scoped to the current browser tab via `sessionStorage` and survives refresh.
 
 The judge build uses [`demo/fixtures/snapshot.json`](demo/fixtures/snapshot.json), exported from the deterministic Westrong Kitchen backend seed dated 2026-11-07. Baseline contribution is ฿652.00 for 40 orders. Bundle, Discount, and Advertising results are ฿956.00 / +฿304.00 / risk 25, ฿715.00 / +฿63.00 / risk 29, and ฿747.60 / +฿95.60 / risk 35, respectively. The fixture is fixed synthetic data, so judges cannot edit financial assumptions in the standalone build. The full-stack application below retains editable assumptions and backend recalculation.
 
@@ -18,13 +18,15 @@ $env:NEXT_PUBLIC_GRABSPARK_JUDGE_DEMO = '1'
 npx next start -p 3002 -H 127.0.0.1
 ```
 
+Stop the running `next start` process before rebuilding, then start it again. A rebuild changes static asset names; an older running server can otherwise serve HTML that points to CSS files it cannot load.
+
 For Vercel, create a Next.js project with **Root Directory `frontend`**. [`vercel.json`](vercel.json) runs the dedicated judge build. Vercel's runtime flag selects the browser-only landing page; no database URL, demo session, or external API credentials are needed. The existing FastAPI/PostgreSQL application remains available for local full-stack development. Deployment to a public URL requires connecting this source directory or repository to a Vercel project; this README does not imply a live deployment has already occurred.
 
 Run `node scripts/judge-demo-e2e.mjs` against the local production preview. It tests all three C1 selections and results, mandatory consent, refresh and reset, C2 permission gating and revocation, browser errors, asset loading, and responsive widths of 320, 375, 390, 430, 768, 1024, and 1440px. Screenshots are written to [`../docs/screenshots/judge-demo/`](../docs/screenshots/judge-demo/).
 
 ---
 
-Current Phase 3 One Click flow: Home recommendation → compact three-strategy popup with locally stored AI-generated concept previews → one informed simulated-trial approval → backend processing → Results & Learning → Reviewed. See the [UX and visual refinement report](../docs/phase3-ux-visual-refinement.md) for screenshots, assets, test results, and limitations. The popup previews are concept artwork; prices and financial figures remain backend-driven UI text.
+Current Phase 3 One Click flow: Home recommendation → compact three-strategy popup with locally stored AI-generated concept previews → one informed confirmation → prepared simulated result with separate actual-activity status and optional MAI demo chat → Reviewed. See the [UX and visual refinement report](../docs/phase3-ux-visual-refinement.md) for screenshots, assets, test results, and limitations. The popup previews are concept artwork; prices and financial figures remain backend-driven UI text.
 
 The disposable preview at port 3001 shows **Reset demo account** after opening the Profile menu in the app header. It resets all sample account data in the local `grabspark_a1_visual` database and returns to the Home recommendation popup. The preview launcher sets `GRABSPARK_DEMO_RESET_ENABLED=1`; the main app does not show this control. The backend independently verifies the exact preview database, loopback database host, local mode, seeded merchant owner, and normal session/CSRF checks before reset. The reset is repeatable and never publishes a campaign.
 
