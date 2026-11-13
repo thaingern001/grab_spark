@@ -134,6 +134,14 @@ try {
   await page.getByRole("button", { name: /Open simulated AI workspace/ }).click();
   await page.getByRole("button", { name: /Ask simulated AI/ }).click();
   check(await page.getByRole("heading", { name: "Sales summary · synthetic" }).count() === 0, "Revoked sales data exposed");
+  await page.getByRole("button", { name: "AI Connections" }).click();
+  await page.getByRole("button", { name: /Other.*Concept option/ }).click();
+  check(await page.getByRole("button", { name: /Other.*Concept option/ }).getAttribute("aria-pressed") === "true", "Other client not selected");
+  await page.getByRole("button", { name: /Authorize simulated connection/ }).click();
+  await page.getByRole("button", { name: /Open simulated AI workspace/ }).click();
+  await page.getByRole("heading", { name: "Other concept workspace" }).waitFor();
+  await page.reload();
+  await page.getByRole("heading", { name: "Other concept workspace" }).waitFor();
   await page.getByRole("button", { name: "Reset demo" }).click();
   await page.getByRole("button", { name: "Connector", exact: true }).click();
   check(await page.getByText("Not Connected", { exact: true }).count() === 1, "Reset retained connection");
@@ -167,6 +175,7 @@ try {
     await page.getByRole("button", { name: "Home", exact: true }).click();
     await page.getByRole("button", { name: "Connector", exact: true }).click();
     await noOverflow(page, `${width}px connections`);
+    check(await page.locator(".judge-client-options button").count() === 3, `${width}px client options missing`);
     await page.getByRole("button", { name: /ChatGPT.*Concept option/ }).click();
     await page.getByRole("checkbox", { name: /Sales Data — Read/ }).check();
     await page.getByRole("checkbox", { name: /Menu Performance — Read/ }).check();

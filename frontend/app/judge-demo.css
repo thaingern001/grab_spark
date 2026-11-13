@@ -123,10 +123,16 @@
 .judge-status { display:flex; align-items:center; gap:11px; margin:15px 0; padding:14px; border:1px solid #d2e7d7; border-radius:12px; background:#eef8f0; color:#0a7139; }
 .judge-status span { display:flex; flex-direction:column; gap:3px; }
 .judge-status small { color:#4a6551; font-size:12px; }
-.judge-client-options { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; }
-.judge-client-options button { display:flex; flex-direction:column; gap:4px; min-height:70px; padding:12px; border:1px solid #d6e3d9; border-radius:11px; background:#fff; text-align:left; font-weight:800; cursor:pointer; }
+.judge-client-options { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
+.judge-client-options button { display:flex; flex-direction:column; align-items:flex-start; gap:4px; min-width:0; min-height:91px; padding:10px; border:1px solid #d6e3d9; border-radius:11px; background:#fff; text-align:left; cursor:pointer; }
 .judge-client-options button.is-active { border:2px solid #008a44; background:#f1faf3; }
-.judge-client-options small { color:#59705e; font-size:11px; font-weight:500; }
+.judge-client-options button:focus-visible { outline:3px solid #087d3c; outline-offset:2px; }
+.judge-client-icon { display:grid; place-items:center; width:28px; height:28px; border-radius:8px; background:#edf4ef; }
+.judge-client-icon img { display:block; width:19px; height:19px; }
+.judge-client-icon-claude { background:#fbf0e9; }
+.judge-client-icon-other { color:#456076; background:#eef3f7; }
+.judge-client-name { font-size:14px; font-weight:800; line-height:1.1; }
+.judge-client-options small { color:#59705e; font-size:11px; font-weight:500; line-height:1.1; }
 .judge-scope-list { display:grid; gap:7px; }
 .judge-scope-list label { display:flex; align-items:center; gap:10px; min-height:57px; padding:9px; border:1px solid #dce7df; border-radius:10px; background:#fff; cursor:pointer; }
 .judge-scope-list input { width:18px; height:18px; accent-color:#087d3c; }
