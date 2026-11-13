@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, ArrowRight, ChartNoAxesCombined, Check, CheckCircle2, ChevronRight, CircleEllipsis, CircleHelp, ClipboardList, Link2, ListChecks, RotateCcw, ShieldCheck, Sparkles, Store, UtensilsCrossed, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChartNoAxesCombined, Check, CheckCircle2, ChevronRight, CircleEllipsis, CircleHelp, ClipboardList, House, Link2, ListChecks, RotateCcw, ShieldCheck, Sparkles, Store, UtensilsCrossed, X } from "lucide-react";
 import { StrategyVisual } from "@/components/strategy-visual";
 import { SimulatedAiWorkspace } from "@/components/simulated-ai-workspace";
 import { TrendBars } from "@/components/trend-bars";
@@ -22,9 +22,19 @@ function ClientIcon({ client }: { client: Client }) {
 export function JudgeDemo() {
   const [state, setState] = useState<DemoState>(initialDemoState);
   const [loaded, setLoaded] = useState(false);
+  const [shortcutsOpen, setShortcutsOpen] = useState(false);
+  const [homeTab, setHomeTab] = useState("Home");
   const recommendationRef = useRef<HTMLDivElement>(null);
   useEffect(() => { setState(loadDemoState()); setLoaded(true); }, []);
   useEffect(() => { if (loaded) saveDemoState(state); }, [loaded, state]);
+  useEffect(() => {
+    if (!shortcutsOpen) return;
+    const closeOnEscape = (event: KeyboardEvent) => { if (event.key === "Escape") setShortcutsOpen(false); };
+    const closeOutside = (event: PointerEvent) => { if (!(event.target as Element).closest(".judge-quick-actions")) setShortcutsOpen(false); };
+    document.addEventListener("keydown", closeOnEscape);
+    document.addEventListener("pointerdown", closeOutside);
+    return () => { document.removeEventListener("keydown", closeOnEscape); document.removeEventListener("pointerdown", closeOutside); };
+  }, [shortcutsOpen]);
   useEffect(() => { if (state.view === "c1-home") requestAnimationFrame(() => document.querySelector(".judge-main .home-for-you")?.scrollIntoView({ behavior: "auto", block: "start" })); }, [state.view]);
   useEffect(() => {
     if (state.view !== "recommendation") return;
@@ -41,12 +51,18 @@ export function JudgeDemo() {
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [state.view]);
   const update = (change: (old: DemoState) => DemoState) => setState(change);
-  const go = (view: DemoView) => update(old => ({ ...old, view }));
+  const go = (view: DemoView) => { setShortcutsOpen(false); setHomeTab("Home"); update(old => ({ ...old, view })); };
+  function openHomeSection(id: string, tab: string) {
+    setShortcutsOpen(false);
+    setHomeTab(tab);
+    update(old => ({ ...old, view: "home" }));
+    requestAnimationFrame(() => document.getElementById(id)?.scrollIntoView({ behavior: "auto", block: "start" }));
+  }
   const chosen = evaluation.strategies.find(item => item.strategy_id === state.c1.selected)!;
   const detail = evaluation.strategies.find(item => item.strategy_id === state.c1.detail)!;
   const approved = evaluation.strategies.find(item => item.strategy_id === state.c1.approved);
   const granted = (scope: Scope) => state.c2.status === "connected" && state.c2.grantedScopes.includes(scope);
-  function reset() { clearDemoState(); setState(initialDemoState); }
+  function reset() { setShortcutsOpen(false); setHomeTab("Home"); clearDemoState(); setState(initialDemoState); }
   function select(id: StrategyId) { update(old => ({ ...old, c1: { ...old.c1, selected: id } })); }
   function details(id: StrategyId) { update(old => ({ ...old, view: "details", c1: { ...old.c1, detail: id } })); }
   function toggleScope(scope: Scope) {
@@ -68,7 +84,7 @@ export function JudgeDemo() {
   return <div className="judge-stage">
     <div className="judge-topline"><span><Sparkles size={16} /> GrabSpark · 2C Interactive Demo</span><button type="button" onClick={reset}><RotateCcw size={15} /> Reset demo</button></div>
     <div className="judge-frame">
-      <header className="judge-header"><button type="button" className="judge-brand" onClick={() => go("home")} aria-label="Return to Merchant Home"><span className="brand-mark"><Store size={18} /></span><span><strong>GrabMerchant</strong><small>Westrong Kitchen · Synthetic store</small></span></button><div className="judge-header-actions"><button type="button" onClick={reset} title="Reset demo" aria-label="Reset demo"><RotateCcw size={19} /></button><span title="Unofficial interactive concept" aria-label="Unofficial interactive concept"><CircleHelp size={20} /></span></div></header>
+      <header className="judge-header"><button type="button" className="judge-brand" onClick={() => go("home")} aria-label="Return to Merchant Home"><span className="brand-mark"><Store size={18} /></span><span><strong>GrabMerchant</strong><small>Westrong Kitchen · Synthetic store</small></span></button><div className="judge-header-actions"><div className="judge-quick-actions"><button type="button" aria-label="Quick actions" aria-expanded={shortcutsOpen} aria-controls="judge-quick-menu" onClick={() => setShortcutsOpen(open => !open)}><CircleEllipsis size={20} /></button>{shortcutsOpen && <nav id="judge-quick-menu" className="judge-quick-menu" aria-label="Quick actions"><button type="button" onClick={() => go(state.c1.resultReady ? "results" : state.c1.approved ? "processing" : "recommendation")}><Sparkles size={18} /> One Click</button><button type="button" onClick={() => go("connections")}><Link2 size={18} /> Connector</button></nav>}</div><button type="button" onClick={reset} title="Reset demo" aria-label="Reset demo"><RotateCcw size={19} /></button><span title="Unofficial interactive concept" aria-label="Unofficial interactive concept"><CircleHelp size={20} /></span></div></header>
       <div className="judge-ribbon">Interactive Concept Demo · Synthetic Merchant Data · No Grab integration</div>
       <main id="main-content" className="judge-main" key={state.view}>
         {(state.view === "home" || state.view === "c1-home" || state.view === "recommendation") && <JudgeMerchantHome approvedStrategy={state.c1.approved} resultReady={state.c1.resultReady} reviewed={state.c1.reviewed} onOneClick={() => go(state.c1.resultReady ? "results" : state.c1.approved ? "processing" : "recommendation")} onConnector={() => go("connections")} />}
@@ -85,7 +101,7 @@ export function JudgeDemo() {
 
       </main>
       {state.view === "recommendation" && <div id="judge-consent-footer" className="judge-approval-footer"><small>7-day simulation · No real promotion or ad</small><label><input type="checkbox" checked={state.c1.consentInputs} onChange={event => update(old => ({ ...old, c1: { ...old.c1, consentInputs: event.target.checked } }))} /><span>I reviewed the prices, costs, volumes, spending, and assumptions.</span></label><label><input type="checkbox" checked={state.c1.consentSimulation} onChange={event => update(old => ({ ...old, c1: { ...old.c1, consentSimulation: event.target.checked } }))} /><span>I understand this is a simulation and no real campaign will be published.</span></label><button type="button" className="primary-button" disabled={!state.c1.consentInputs || !state.c1.consentSimulation || Boolean(state.c1.approved)} onClick={() => update(old => ({ ...old, view: "processing", c1: { ...old.c1, approved: old.c1.selected, resultReady: false, reviewed: false } }))}>{state.c1.approved ? "Mission already approved" : `Approve and simulate ${strategyNames[chosen.strategy_id]} for 7 days`} <ArrowRight size={16} /></button></div>}
-      <nav className="judge-bottom-nav" aria-label="Demo navigation"><button type="button" className={state.view === "home" || state.view === "c1-home" ? "is-current" : ""} onClick={() => go("home")}>Home</button><button type="button" className={["recommendation", "comparison", "details", "processing", "results"].includes(state.view) ? "is-current" : ""} onClick={() => go(state.c1.resultReady ? "results" : state.c1.approved ? "processing" : "recommendation")}>One Click</button><button type="button" className={["connections", "workspace"].includes(state.view) ? "is-current" : ""} onClick={() => go("connections")}>Connector</button></nav>
+      <nav className="judge-bottom-nav" aria-label="Merchant navigation"><button type="button" className={(state.view === "home" || state.view === "c1-home") && homeTab === "Home" ? "is-current" : ""} onClick={() => go("home")}><House size={19} /> Home</button><button type="button" className={homeTab === "Orders" && state.view === "home" ? "is-current" : ""} onClick={() => openHomeSection("judge-orders", "Orders")}><ClipboardList size={19} /> Orders</button><button type="button" className={homeTab === "Menu" && state.view === "home" ? "is-current" : ""} onClick={() => openHomeSection("judge-menu", "Menu")}><UtensilsCrossed size={19} /> Menu</button><button type="button" className={homeTab === "Insights" && state.view === "home" ? "is-current" : ""} onClick={() => openHomeSection("judge-insights", "Insights")}><ChartNoAxesCombined size={19} /> Insights</button><button type="button" className={["recommendation", "comparison", "details", "processing", "results"].includes(state.view) ? "is-current" : ""} onClick={() => go(state.c1.resultReady ? "results" : state.c1.approved ? "processing" : "recommendation")}><Sparkles size={19} /> One Click</button></nav>
     </div><p className="judge-footer">GrabSpark 2026 · Unofficial concept preview</p>
   </div>;
 }
@@ -100,7 +116,7 @@ function JudgeMerchantHome({ approvedStrategy, resultReady, reviewed, onOneClick
     <section id="judge-orders" className="merchant-highlights" aria-label="Today's synthetic overview"><div className="highlight-orders"><span className="highlight-pill">Synthetic data</span><strong>{dashboard.today.orders}</strong><span>Completed orders today</span></div><div className="highlight-sales"><span>Sales today</span><strong>{baht(dashboard.today.gmv)}</strong><small>GMV · {dashboard.today.orders} orders</small></div></section>
     <div className="home-aov">Average order value <strong>{baht(dashboard.today.aov)}</strong></div>
     <section className="home-for-you" aria-labelledby="judge-for-you-heading"><div className="home-feature-heading"><h2 id="judge-for-you-heading">For your store</h2><span>One Click</span></div><article className={`home-recommendation${approved ? "" : " is-opportunity"}`}><div className="home-recommendation-top"><span className="native-ai-icon"><Sparkles size={18} /></span><span><strong>{approved ? "One Click · Simulated mission" : "One Click · New opportunity"}</strong><small>{approved ? reviewed ? "Result reviewed" : resultReady ? "Result ready for review" : "Approved in this demo session" : "Compare 3 strategies · 1 recommendation"}</small></span></div><div className="home-recommendation-visual"><StrategyVisual strategyId={approvedStrategy ?? recommendation.strategy_id} variant="hero" /><small>Concept only · Not an actual menu photo or published campaign</small></div><h3>{opportunityTitle}</h3><p>{approved ? "Your selected strategy stays in this browser session. No real promotion was published." : `Lowest illustrative modeled risk: ${recommendation.risk_score}/100`}</p><div className="home-recommendation-impact"><span>{approved ? "Mission status" : "Estimated 7-day contribution difference"}</span><strong className={approved ? "status-copy" : undefined}>{approved ? reviewed ? "Result reviewed" : resultReady ? "Simulated result ready" : "Approved for simulation" : baht(recommendation.estimated_difference, true)}</strong></div><button type="button" className="home-recommendation-link" onClick={onOneClick}>{actionLabel} <ArrowRight size={17} /></button><small className="home-recommendation-disclaimer">Simulation only · No real promotion is published</small></article></section>
-    <section className="merchant-shortcuts" aria-labelledby="judge-shortcuts-heading"><h2 id="judge-shortcuts-heading">Manage your store</h2><nav className="merchant-shortcut-grid" aria-label="Store shortcuts"><button type="button" onClick={() => jumpTo("judge-orders")}><span><ClipboardList size={21} /></span>Orders</button><button type="button" onClick={() => jumpTo("judge-menu")}><span><UtensilsCrossed size={21} /></span>Menu</button><button type="button" onClick={() => jumpTo("judge-insights")}><span><ChartNoAxesCombined size={21} /></span>Insights</button><button type="button" onClick={onOneClick}><span><Sparkles size={21} /></span>One Click</button><button type="button" onClick={onConnector}><span><Link2 size={21} /></span>AI Connections</button></nav></section>
+    <section className="merchant-shortcuts" aria-labelledby="judge-shortcuts-heading"><h2 id="judge-shortcuts-heading">Manage your store</h2><nav className="merchant-shortcut-grid" aria-label="Store shortcuts"><button type="button" onClick={() => jumpTo("judge-orders")}><span><ClipboardList size={21} /></span>Orders</button><button type="button" onClick={() => jumpTo("judge-menu")}><span><UtensilsCrossed size={21} /></span>Menu</button><button type="button" onClick={() => jumpTo("judge-insights")}><span><ChartNoAxesCombined size={21} /></span>Insights</button></nav></section>
     <section id="judge-insights" className="home-compact-section" aria-labelledby="judge-trend-heading"><div className="compact-heading"><div><span>INSIGHTS · SYNTHETIC</span><h2 id="judge-trend-heading">Sales over the past 6 months</h2></div></div><TrendBars months={dashboard.monthly_trend} /></section>
     <section id="judge-menu" className="home-compact-section" aria-labelledby="judge-top-heading"><div className="compact-heading"><div><span>TOP MENU ITEMS</span><h2 id="judge-top-heading">Popular items</h2></div></div><ol className="compact-ranking">{dashboard.top_items.slice(0, 3).map((item, index) => <li key={item.menu_item_id}><span className="rank">{index + 1}</span><span><strong>{item.name}</strong><small>{item.units} sold</small></span><b>{baht(item.gmv)}</b></li>)}</ol></section>
     <section className="judge-home-connector" aria-labelledby="judge-connector-heading"><span className="judge-eyebrow">C2 · CONNECTOR</span><h2 id="judge-connector-heading">AI Connections</h2><p>Explore how a merchant controls read-only access for a simulated AI workspace.</p><button type="button" onClick={onConnector}>Explore Connector <ArrowRight size={17} /></button></section>

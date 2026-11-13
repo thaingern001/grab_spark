@@ -16,6 +16,10 @@
 .judge-header-help { border:0; color:#3c5b47; background:none; }
 .judge-header-actions { display:flex; align-items:center; gap:10px; color:#3c5b47; }
 .judge-header-actions button { display:grid; place-items:center; width:36px; height:36px; border:1px solid #dbe9df; border-radius:50%; color:#176538; background:#fff; cursor:pointer; }
+.judge-quick-actions { position:relative; }
+.judge-quick-menu { position:absolute; top:43px; right:0; z-index:10; display:grid; gap:3px; width:182px; padding:6px; border:1px solid #d6e7da; border-radius:12px; background:#fff; box-shadow:0 12px 30px #173a2526; }
+.judge-header-actions .judge-quick-menu button { display:flex; align-items:center; justify-content:flex-start; gap:10px; width:100%; height:42px; padding:0 10px; border:0; border-radius:8px; color:#12452a; text-align:left; font-size:13px; font-weight:750; }
+.judge-header-actions .judge-quick-menu button:hover,.judge-header-actions .judge-quick-menu button:focus-visible { background:#edf8f0; }
 .judge-ribbon { flex:0 0 auto; padding:7px 10px; color:#375d43; background:#eaf5ed; border-bottom:1px solid #d9eade; text-align:center; font-size:11px; font-weight:700; }
 .judge-main { flex:1 1 auto; min-height:0; overflow:auto; scrollbar-width:thin; }
 .judge-page,.judge-recommendation { padding:20px 18px 28px; }
@@ -23,6 +27,7 @@
 .judge-merchant-home .home-recommendation-link { width:100%; padding:0; border:0; background:none; text-align:left; cursor:pointer; }
 .judge-merchant-home .home-recommendation.is-opportunity .home-recommendation-link { padding:0 13px; border:1px solid #008442; background:#008742; color:#fff; }
 .judge-merchant-home .merchant-shortcut-grid button { display:flex; align-items:center; flex-direction:column; gap:6px; min-width:0; padding:0; border:0; background:none; color:#2e3931; text-align:center; font:inherit; font-size:10px; line-height:1.25; cursor:pointer; }
+.judge-merchant-home .merchant-shortcut-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
 .judge-merchant-home .merchant-shortcut-grid button > span { display:grid; place-items:center; width:47px; height:47px; border:1px solid #e1e6e2; border-radius:11px; color:#425977; background:#fff; }
 .judge-merchant-home .merchant-shortcut-grid button:nth-child(4) > span { color:var(--green); }
 .judge-merchant-home .merchant-shortcut-grid button:focus-visible > span,.judge-merchant-home .merchant-shortcut-grid button:hover > span { border-color:var(--green); background:#f0faf2; }
@@ -103,9 +108,10 @@
 .judge-approval-footer label { display:flex; align-items:center; gap:8px; min-height:43px; color:#253d2b; font-size:12px; line-height:1.25; }
 .judge-approval-footer input { flex:0 0 18px; width:18px; height:18px; accent-color:#087d3c; }
 .judge-approval-footer .primary-button { display:flex; align-items:center; justify-content:center; gap:5px; width:100%; min-height:47px; margin-top:5px; font-size:13px; }
-.judge-bottom-nav { display:grid; grid-template-columns:repeat(3,1fr); flex:0 0 auto; min-height:53px; border-top:1px solid var(--line); background:#fff; }
-.judge-bottom-nav button { border:0; background:none; color:#657669; font-size:12px; font-weight:750; cursor:pointer; }
-.judge-bottom-nav button.is-current { color:#007f3d; background:#edf8f0; }
+.judge-bottom-nav { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); flex:0 0 auto; min-height:59px; border-top:1px solid var(--line); background:#fff; }
+.judge-bottom-nav button { display:flex; align-items:center; justify-content:center; flex-direction:column; gap:2px; min-width:0; padding:5px 1px; border:0; background:none; color:#657669; font-size:10px; font-weight:700; cursor:pointer; }
+.judge-bottom-nav button.is-current { color:#007f3d; }
+.judge-bottom-nav button:focus-visible,.judge-header-actions > button:focus-visible,.judge-quick-actions > button:focus-visible { outline:2px solid #008743; outline-offset:-3px; }
 .judge-footer { margin:10px 0 0; color:#51665a; font-size:12px; }
 .judge-compare-table { overflow:hidden; border:1px solid #d9e5dc; border-radius:12px; background:#fff; }
 .judge-compare-head,.judge-compare-row { display:grid; grid-template-columns:1.05fr 1.15fr .48fr; gap:4px; align-items:center; padding:10px; }

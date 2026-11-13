@@ -25,9 +25,11 @@ async function setup(width = 390, height = 844) {
   await intro.waitFor();
   if (width === 390 && !capturedIntro) { await page.screenshot({ path: `${shots}/00a-judge-first-open.png` }); capturedIntro = true; }
   await intro.getByRole("button", { name: "Merchant Home" }).click();
+  await intro.waitFor({ state: "hidden" });
   await page.getByRole("heading", { name: "For your store" }).waitFor();
   check(await intro.count() === 0, "Recommendation did not dismiss into Home");
   check(await page.locator(".home-recommendation.is-opportunity").count() === 1, "Highlighted One Click card missing");
+  check(await page.locator(".judge-bottom-nav button").count() === 5, "Five-icon merchant footer missing");
   return { page, context };
 }
 
@@ -43,6 +45,14 @@ try {
     check(await page.getByRole("heading", { name: "Manage your store" }).count() === 1, "Merchant operations missing from Home");
     check(await page.getByRole("heading", { name: "Popular items" }).count() === 1, "Menu summary missing from Home");
     if (name === "Bundle") {
+      const footer = page.getByRole("navigation", { name: "Merchant navigation" });
+      await footer.getByRole("button", { name: "Orders" }).click();
+      check(await footer.getByRole("button", { name: "Orders" }).getAttribute("class") === "is-current", "Orders footer tab did not activate");
+      await footer.getByRole("button", { name: "Menu" }).click();
+      check(await footer.getByRole("button", { name: "Menu" }).getAttribute("class") === "is-current", "Menu footer tab did not activate");
+      await footer.getByRole("button", { name: "Insights" }).click();
+      check(await footer.getByRole("button", { name: "Insights" }).getAttribute("class") === "is-current", "Insights footer tab did not activate");
+      await footer.getByRole("button", { name: "Home" }).click();
       await page.reload();
       const reopened = page.getByRole("dialog", { name: "One Click recommendation" });
       await reopened.waitFor();
@@ -102,7 +112,8 @@ try {
   }
 
   const { page, context } = await setup();
-  await page.getByRole("button", { name: "Connector", exact: true }).click();
+  await page.getByRole("button", { name: "Quick actions" }).click();
+  await page.getByRole("navigation", { name: "Quick actions" }).getByRole("button", { name: "Connector" }).click();
   await page.getByRole("heading", { name: "AI Connections" }).waitFor();
   check(await page.getByRole("button", { name: /Authorize simulated connection/ }).isDisabled(), "Authorize allowed no client/scopes");
   await page.getByRole("button", { name: /ChatGPT.*Concept option/ }).click();
@@ -170,7 +181,8 @@ try {
   await page.getByRole("button", { name: "Reset demo" }).click();
   await page.getByRole("dialog", { name: "One Click recommendation" }).waitFor();
   await page.getByRole("dialog", { name: "One Click recommendation" }).getByRole("button", { name: "Merchant Home" }).click();
-  await page.getByRole("button", { name: "Connector", exact: true }).click();
+  await page.getByRole("button", { name: "Quick actions" }).click();
+  await page.getByRole("navigation", { name: "Quick actions" }).getByRole("button", { name: "Connector" }).click();
   check(await page.getByText("Not Connected", { exact: true }).count() === 1, "Reset retained connection");
   check(await page.getByRole("checkbox", { checked: true }).count() === 0, "Reset retained permissions");
   await context.close();
@@ -200,7 +212,8 @@ try {
     await page.getByRole("button", { name: /Generate simulated result/ }).click();
     await noOverflow(page, `${width}px results`);
     await page.getByRole("button", { name: "Home", exact: true }).click();
-    await page.getByRole("button", { name: "Connector", exact: true }).click();
+    await page.getByRole("button", { name: "Quick actions" }).click();
+    await page.getByRole("navigation", { name: "Quick actions" }).getByRole("button", { name: "Connector" }).click();
     await noOverflow(page, `${width}px connections`);
     check(await page.locator(".judge-client-options button").count() === 3, `${width}px client options missing`);
     await page.getByRole("button", { name: /ChatGPT.*Concept option/ }).click();
