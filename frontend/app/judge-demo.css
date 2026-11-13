@@ -19,6 +19,17 @@
 .judge-ribbon { flex:0 0 auto; padding:7px 10px; color:#375d43; background:#eaf5ed; border-bottom:1px solid #d9eade; text-align:center; font-size:11px; font-weight:700; }
 .judge-main { flex:1 1 auto; min-height:0; overflow:auto; scrollbar-width:thin; }
 .judge-page,.judge-recommendation { padding:20px 18px 28px; }
+.judge-merchant-home { min-height:100%; background:#fff; }
+.judge-merchant-home .home-recommendation-link { width:100%; padding:0; border:0; background:none; text-align:left; cursor:pointer; }
+.judge-merchant-home .merchant-shortcut-grid button { display:flex; align-items:center; flex-direction:column; gap:6px; min-width:0; padding:0; border:0; background:none; color:#2e3931; text-align:center; font:inherit; font-size:10px; line-height:1.25; cursor:pointer; }
+.judge-merchant-home .merchant-shortcut-grid button > span { display:grid; place-items:center; width:47px; height:47px; border:1px solid #e1e6e2; border-radius:11px; color:#425977; background:#fff; }
+.judge-merchant-home .merchant-shortcut-grid button:nth-child(4) > span { color:var(--green); }
+.judge-merchant-home .merchant-shortcut-grid button:focus-visible > span,.judge-merchant-home .merchant-shortcut-grid button:hover > span { border-color:var(--green); background:#f0faf2; }
+.judge-merchant-home .compact-ranking .rank { display:grid; place-items:center; color:var(--green-dark); background:#e9f5ed; font-weight:800; }
+.judge-home-connector { margin-top:26px; padding:15px; border:1px solid #d5e7da; border-radius:13px; background:#f2faf4; }
+.judge-home-connector h2 { margin:6px 0; font-size:17px; }
+.judge-home-connector p { margin:0 0 9px; color:#435e4b; font-size:12px; line-height:1.4; }
+.judge-home-connector button { display:flex; align-items:center; justify-content:space-between; width:100%; min-height:38px; padding:0; border:0; background:none; color:var(--green-dark); font-size:12px; font-weight:800; cursor:pointer; }
 .judge-page h1,.judge-recommendation h1 { margin:8px 0; font-size:25px; line-height:1.2; letter-spacing:-.03em; }
 .judge-page h2 { margin:18px 0 9px; font-size:17px; }
 .judge-page h3 { margin:9px 0; font-size:15px; }
@@ -41,6 +52,18 @@
 .judge-metric-row > div,.judge-detail-grid > div { display:flex; flex-direction:column; gap:7px; padding:13px; border:1px solid #dce9df; border-radius:12px; background:#fff; }
 .judge-metric-row small,.judge-detail-grid small { color:#536758; font-size:12px; }
 .judge-metric-row strong,.judge-detail-grid strong { color:#07592c; font-size:22px; font-variant-numeric:tabular-nums; }
+.judge-detail-summary { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin:14px 0; }
+.judge-detail-summary > div { display:flex; flex-direction:column; gap:5px; min-width:0; padding:11px; border:1px solid #dce9df; border-radius:11px; background:#f8fcf9; }
+.judge-detail-summary small { color:#46614e; font-size:12px; line-height:1.3; }
+.judge-detail-summary strong { overflow-wrap:anywhere; color:#07592c; font-size:19px; font-variant-numeric:tabular-nums; }
+.judge-detail-section { margin-top:18px; }
+.judge-detail-section h2 { margin-bottom:8px; }
+.judge-detail-section dl { margin:0; border:1px solid #dce9df; border-radius:11px; background:#fff; }
+.judge-detail-section dl > div { display:flex; justify-content:space-between; gap:12px; padding:9px 11px; border-top:1px solid #e8eee9; font-size:12px; line-height:1.35; }
+.judge-detail-section dl > div:first-child { border-top:0; }
+.judge-detail-section dt { color:#405b48; }
+.judge-detail-section dd { flex:0 0 auto; margin:0; color:#162f1d; font-weight:800; font-variant-numeric:tabular-nums; }
+.judge-strategy-detail-page .assumptions-details li { margin:6px 0; }
 .judge-opportunity { margin-top:18px; padding:17px; border:1px solid #b9dec4; border-radius:16px; background:linear-gradient(130deg,#edf9f0,#fff); }
 .judge-opportunity > span { display:inline-flex; align-items:center; gap:7px; color:#006b35; font-size:12px; font-weight:750; }
 .judge-opportunity h2 { margin:10px 0 6px; font-size:21px; }
@@ -134,4 +157,4 @@
 .judge-frame .impact-negative { color:#a0444b; }
 .judge-frame .impact-zero { color:#66746a; }
 @media (max-width:440px) { .judge-stage { padding:0; } .judge-topline,.judge-footer { display:none; } .judge-frame { width:100%; height:100dvh; min-height:0; border:0; border-radius:0; } }
-@media (max-width:350px) { .judge-page,.judge-recommendation { padding-inline:12px; } .judge-strategy-select { gap:5px; } .judge-strategy-figure { flex-basis:87px; } .judge-strategy-figure strong { font-size:15px; } .judge-strategy-select .strategy-visual.is-thumbnail .strategy-visual-image { width:36px; height:36px; } .judge-brand strong { font-size:17px; } .judge-ribbon { font-size:10px; } .judge-approval-footer { padding-inline:10px; } }
+@media (max-width:350px) { .judge-page,.judge-recommendation { padding-inline:12px; } .judge-merchant-home .merchant-shortcut-grid button > span { width:42px; height:42px; } .judge-strategy-select { gap:5px; } .judge-strategy-figure { flex-basis:87px; } .judge-strategy-figure strong { font-size:15px; } .judge-strategy-select .strategy-visual.is-thumbnail .strategy-visual-image { width:36px; height:36px; } .judge-brand strong { font-size:17px; } .judge-ribbon { font-size:10px; } .judge-approval-footer { padding-inline:10px; } }

@@ -20,7 +20,7 @@ async function setup(width = 390, height = 844) {
   page.on("console", message => { if (message.type() === "error") problems.push(message.text()); });
   page.on("request", request => { if (/127\.0\.0\.1:8000|localhost:8000|\/api\/merchant/.test(request.url())) problems.push(`Backend request: ${request.url()}`); });
   await page.goto(base);
-  await page.getByRole("heading", { name: /One Intelligence Foundation/ }).waitFor();
+  await page.getByRole("heading", { name: "For your store" }).waitFor();
   return { page, context };
 }
 
@@ -33,13 +33,23 @@ async function noOverflow(page, label) {
 try {
   for (const [name, data] of Object.entries(expected)) {
     const { page, context } = await setup();
-    await page.getByRole("button", { name: /C1 · One Click/ }).click();
+    check(await page.getByRole("heading", { name: "Manage your store" }).count() === 1, "Merchant operations missing from Home");
+    check(await page.getByRole("heading", { name: "Popular items" }).count() === 1, "Menu summary missing from Home");
+    if (name === "Bundle") await page.screenshot({ path: `${shots}/00-merchant-home.png` });
+
     await page.getByRole("button", { name: "View recommendation" }).click();
     await page.getByRole("heading", { name: "Recommended: Bundle" }).waitFor();
     await page.waitForFunction(() => [...document.querySelectorAll(".judge-strategy-card img")].every(image => image.complete && image.naturalWidth > 0));
     if (name === "Bundle") await page.screenshot({ path: `${shots}/01-c1-recommendation.png` });
     await page.getByRole("button", { name: `View ${name} details` }).click();
     await page.getByRole("heading", { name, exact: true }).waitFor();
+    await page.getByRole("heading", { name: "Financial breakdown" }).waitFor();
+    check(await page.getByText("Food cost per strategy order").count() === 1, `${name} cost detail missing`);
+    if (name === "Bundle") {
+      await page.screenshot({ path: `${shots}/02b-c1-strategy-detail.png` });
+      await page.locator(".judge-main").evaluate(element => { element.scrollTop = 900; });
+      await page.screenshot({ path: `${shots}/02c-c1-financial-breakdown.png` });
+    }
     await page.getByRole("button", { name: /Return to selection/ }).click();
     check(await page.getByRole("button", { name: /Approve and simulate Bundle/ }).count() === 1, "Details changed selection");
     await page.getByRole("button", { name: new RegExp(`Select ${name} strategy`) }).click();
@@ -70,14 +80,14 @@ try {
     if (name === "Bundle") await page.screenshot({ path: `${shots}/05-c1-reviewed.png` });
     await noOverflow(page, `${name} result`);
     await page.getByRole("button", { name: "Reset demo" }).click();
-    await page.getByRole("heading", { name: /One Intelligence Foundation/ }).waitFor();
-    await page.getByRole("button", { name: /C1 · One Click/ }).click();
+    await page.getByRole("heading", { name: "For your store" }).waitFor();
+
     await page.getByRole("button", { name: "View recommendation" }).waitFor();
     await context.close();
   }
 
   const { page, context } = await setup();
-  await page.getByRole("button", { name: /C2 · Connector/ }).click();
+  await page.getByRole("button", { name: "Connector", exact: true }).click();
   await page.getByRole("heading", { name: "AI Connections" }).waitFor();
   check(await page.getByRole("button", { name: /Authorize simulated connection/ }).isDisabled(), "Authorize allowed no client/scopes");
   await page.getByRole("button", { name: /ChatGPT.*Concept option/ }).click();
@@ -125,7 +135,7 @@ try {
   await page.getByRole("button", { name: /Ask simulated AI/ }).click();
   check(await page.getByRole("heading", { name: "Sales summary · synthetic" }).count() === 0, "Revoked sales data exposed");
   await page.getByRole("button", { name: "Reset demo" }).click();
-  await page.getByRole("button", { name: /C2 · Connector/ }).click();
+  await page.getByRole("button", { name: "Connector", exact: true }).click();
   check(await page.getByText("Not Connected", { exact: true }).count() === 1, "Reset retained connection");
   check(await page.getByRole("checkbox", { checked: true }).count() === 0, "Reset retained permissions");
   await context.close();
@@ -133,7 +143,7 @@ try {
   for (const width of [320, 375, 390, 430, 768, 1024, 1440]) {
     const { page, context } = await setup(width);
     await noOverflow(page, `${width}px landing`);
-    await page.getByRole("button", { name: /C1 · One Click/ }).click();
+
     await page.getByRole("button", { name: "View recommendation" }).click();
     await noOverflow(page, `${width}px recommendation`);
     const clipped = await page.locator(".judge-strategy-figure").evaluateAll(figures => figures.some(figure => {
@@ -154,8 +164,8 @@ try {
     await page.getByRole("button", { name: /Approve and simulate Bundle/ }).click();
     await page.getByRole("button", { name: /Generate simulated result/ }).click();
     await noOverflow(page, `${width}px results`);
-    await page.getByRole("button", { name: "2C Demo", exact: true }).click();
-    await page.getByRole("button", { name: /C2 · Connector/ }).click();
+    await page.getByRole("button", { name: "Home", exact: true }).click();
+    await page.getByRole("button", { name: "Connector", exact: true }).click();
     await noOverflow(page, `${width}px connections`);
     await page.getByRole("button", { name: /ChatGPT.*Concept option/ }).click();
     await page.getByRole("checkbox", { name: /Sales Data — Read/ }).check();
