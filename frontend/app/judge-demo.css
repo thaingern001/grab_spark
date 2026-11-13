@@ -21,6 +21,7 @@
 .judge-page,.judge-recommendation { padding:20px 18px 28px; }
 .judge-merchant-home { min-height:100%; background:#fff; }
 .judge-merchant-home .home-recommendation-link { width:100%; padding:0; border:0; background:none; text-align:left; cursor:pointer; }
+.judge-merchant-home .home-recommendation.is-opportunity .home-recommendation-link { padding:0 13px; border:1px solid #008442; background:#008742; color:#fff; }
 .judge-merchant-home .merchant-shortcut-grid button { display:flex; align-items:center; flex-direction:column; gap:6px; min-width:0; padding:0; border:0; background:none; color:#2e3931; text-align:center; font:inherit; font-size:10px; line-height:1.25; cursor:pointer; }
 .judge-merchant-home .merchant-shortcut-grid button > span { display:grid; place-items:center; width:47px; height:47px; border:1px solid #e1e6e2; border-radius:11px; color:#425977; background:#fff; }
 .judge-merchant-home .merchant-shortcut-grid button:nth-child(4) > span { color:var(--green); }
@@ -37,6 +38,7 @@
 .judge-eyebrow { color:#096b37; font-size:12px; font-weight:800; letter-spacing:.06em; }
 .judge-lead { margin:5px 0 17px; color:#455d4b; font-size:14px; }
 .judge-back { display:flex; align-items:center; gap:6px; width:max-content; min-height:40px; margin:-5px 0 14px; padding:0; border:0; color:var(--green-dark); background:none; font-size:13px; font-weight:700; cursor:pointer; }
+.judge-back:focus-visible { outline:3px solid #087d3c; outline-offset:2px; border-radius:5px; }
 .judge-page .primary-button,.judge-page .secondary-button { display:flex; justify-content:center; align-items:center; gap:8px; width:100%; min-height:47px; margin:16px 0 0; }
 .judge-text-button { display:block; width:100%; min-height:44px; border:0; color:var(--green-dark); background:none; font-weight:750; cursor:pointer; }
 .judge-disclosure { color:#4d6554; font-size:12px; }

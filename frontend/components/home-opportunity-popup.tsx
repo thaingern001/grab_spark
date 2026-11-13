@@ -41,15 +41,11 @@ export function HomeOpportunityPopup({ mission, initialComparison, initialEvalua
   const closeRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
-  const storageKey = `grabspark:opportunity-popup:${mission.id}`;
   const path = `/missions/${mission.id}`;
   const recommended = evaluation.strategies.find(item => item.strategy_id === evaluation.recommended_strategy_id)!;
   const detail = evaluation.strategies.find(item => item.strategy_id === detailStrategy)!;
 
-  useEffect(() => {
-    try { if (forceOpen || sessionStorage.getItem(storageKey) !== "dismissed") setOpen(true); }
-    catch { setOpen(true); }
-  }, [forceOpen, storageKey]);
+  useEffect(() => { setOpen(true); }, [mission.id]);
   useEffect(() => {
     if (!open) return;
     const main = document.querySelector(".app-main");
@@ -66,11 +62,10 @@ export function HomeOpportunityPopup({ mission, initialComparison, initialEvalua
     document.addEventListener("keydown", onKeyDown);
     return () => { main?.classList.remove("has-opportunity-popup"); document.removeEventListener("keydown", onKeyDown); };
   }, [open]);
-  function remember() { try { sessionStorage.setItem(storageKey, "dismissed"); } catch { /* Storage may be unavailable. */ } }
   function dismiss() {
-    remember(); setOpen(false);
+    setOpen(false);
     if (forceOpen) router.replace("/");
-    requestAnimationFrame(() => { document.querySelector(".home-for-you")?.scrollIntoView({ behavior: "smooth", block: "start" }); document.querySelector<HTMLElement>(".home-recommendation-link")?.focus({ preventScroll: true }); });
+    requestAnimationFrame(() => { document.querySelector(".home-for-you")?.scrollIntoView({ behavior: "auto", block: "start" }); document.querySelector<HTMLElement>(".home-recommendation-link")?.focus({ preventScroll: true }); });
   }
   function show(next: View, strategy?: StrategyId) { if (strategy) setDetailStrategy(strategy); setError(""); setView(next); bodyRef.current?.scrollTo({ top: 0 }); }
   async function refresh() {
@@ -111,7 +106,7 @@ export function HomeOpportunityPopup({ mission, initialComparison, initialEvalua
     setBusy(true); setError(""); approvalKey.current ??= crypto.randomUUID();
     try {
       await merchantRequest<Mission>(`${path}/approve`, { method: "POST", idempotencyKey: approvalKey.current, body: { reviewed_revision: evaluation.scenario_revision, evaluation_revision: evaluation.evaluation_revision, selected_strategy_id: selected, confirm_material_inputs: true, acknowledge_simulation: true } });
-      remember(); router.push(path); router.refresh();
+      router.push(path); router.refresh();
     } catch (cause) {
       if (cause instanceof MerchantApiError && cause.status === 409) await refreshAfterConflict("Mission data changed. Review the latest evaluation and confirm again.");
       else setError(cause instanceof Error ? cause.message : "Could not approve the simulated trial.");

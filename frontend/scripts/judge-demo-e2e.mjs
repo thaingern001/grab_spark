@@ -11,6 +11,7 @@ const expected = {
   Advertising: { contribution: "฿747.60", difference: "+฿95.60", risk: "35/100" },
 };
 const problems = [];
+let capturedIntro = false;
 await mkdir(shots, { recursive: true });
 
 async function setup(width = 390, height = 844) {
@@ -20,7 +21,13 @@ async function setup(width = 390, height = 844) {
   page.on("console", message => { if (message.type() === "error") problems.push(message.text()); });
   page.on("request", request => { if (/127\.0\.0\.1:8000|localhost:8000|\/api\/merchant/.test(request.url())) problems.push(`Backend request: ${request.url()}`); });
   await page.goto(base);
+  const intro = page.getByRole("dialog", { name: "One Click recommendation" });
+  await intro.waitFor();
+  if (width === 390 && !capturedIntro) { await page.screenshot({ path: `${shots}/00a-judge-first-open.png` }); capturedIntro = true; }
+  await intro.getByRole("button", { name: "Merchant Home" }).click();
   await page.getByRole("heading", { name: "For your store" }).waitFor();
+  check(await intro.count() === 0, "Recommendation did not dismiss into Home");
+  check(await page.locator(".home-recommendation.is-opportunity").count() === 1, "Highlighted One Click card missing");
   return { page, context };
 }
 
@@ -35,7 +42,13 @@ try {
     const { page, context } = await setup();
     check(await page.getByRole("heading", { name: "Manage your store" }).count() === 1, "Merchant operations missing from Home");
     check(await page.getByRole("heading", { name: "Popular items" }).count() === 1, "Menu summary missing from Home");
-    if (name === "Bundle") await page.screenshot({ path: `${shots}/00-merchant-home.png` });
+    if (name === "Bundle") {
+      await page.reload();
+      const reopened = page.getByRole("dialog", { name: "One Click recommendation" });
+      await reopened.waitFor();
+      await reopened.getByRole("button", { name: "Merchant Home" }).click();
+      await page.screenshot({ path: `${shots}/00-merchant-home.png` });
+    }
 
     await page.getByRole("button", { name: "View recommendation" }).click();
     await page.getByRole("heading", { name: "Recommended: Bundle" }).waitFor();
@@ -80,6 +93,8 @@ try {
     if (name === "Bundle") await page.screenshot({ path: `${shots}/05-c1-reviewed.png` });
     await noOverflow(page, `${name} result`);
     await page.getByRole("button", { name: "Reset demo" }).click();
+    await page.getByRole("dialog", { name: "One Click recommendation" }).waitFor();
+    await page.getByRole("dialog", { name: "One Click recommendation" }).getByRole("button", { name: "Merchant Home" }).click();
     await page.getByRole("heading", { name: "For your store" }).waitFor();
 
     await page.getByRole("button", { name: "View recommendation" }).waitFor();
@@ -153,6 +168,8 @@ try {
   await page.reload();
   await page.locator(".ai-user-bubble").getByText("Can you show a made up forecast?").waitFor();
   await page.getByRole("button", { name: "Reset demo" }).click();
+  await page.getByRole("dialog", { name: "One Click recommendation" }).waitFor();
+  await page.getByRole("dialog", { name: "One Click recommendation" }).getByRole("button", { name: "Merchant Home" }).click();
   await page.getByRole("button", { name: "Connector", exact: true }).click();
   check(await page.getByText("Not Connected", { exact: true }).count() === 1, "Reset retained connection");
   check(await page.getByRole("checkbox", { checked: true }).count() === 0, "Reset retained permissions");

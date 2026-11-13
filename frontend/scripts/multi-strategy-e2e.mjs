@@ -47,7 +47,9 @@ try {
       await page.waitForURL(base + "/");
     }
     await page.reload({ waitUntil: "networkidle" });
-    if (await page.getByRole("dialog").count()) throw new Error(`Dismissed popup returned at ${width}`);
+    await dialog.waitFor();
+    await dialog.getByRole("button", { name: "Close One Click recommendation" }).click();
+    await dialog.waitFor({ state: "hidden" });
     if (errors.length) throw new Error(`${width}px page errors: ${errors.join("; ")}`);
     await context.close();
   }
@@ -56,8 +58,7 @@ try {
   const fallbackPage = await fallbackContext.newPage();
   await fallbackPage.route("**/_next/image?**", route => route.abort());
   await fallbackPage.goto(`${base}/?oneclick=1`, { waitUntil: "networkidle" });
-  await fallbackPage.locator(".strategy-visual-fallback").first().waitFor();
-  if (await fallbackPage.locator(".strategy-visual-fallback").count() !== 3) throw new Error("Preview fallback missing");
+  await fallbackPage.waitForFunction(() => document.querySelectorAll('[role="dialog"] .strategy-visual-fallback').length === 3);
   await fallbackContext.close();
 
   const context = await browser.newContext({ viewport: { width: 390, height: 844 } });

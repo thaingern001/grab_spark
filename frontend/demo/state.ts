@@ -11,7 +11,7 @@ export type DemoState = {
 
 const key = "grabspark:judge-demo:v1";
 export const initialDemoState: DemoState = {
-  view: "home",
+  view: "recommendation",
   c1: { selected: "bundle", detail: "bundle", consentInputs: false, consentSimulation: false, approved: null, resultReady: false, reviewed: false },
   c2: { client: null, scopes: [], grantedScopes: [], status: "not_connected", asked: false, lastPrompt: "", draftReviewed: false },
 };
@@ -28,7 +28,8 @@ export function loadDemoState(): DemoState {
     const value = JSON.parse(raw) as DemoState;
     if (!views.includes(value.view) || !strategies.includes(value.c1.selected) || !strategies.includes(value.c1.detail) || (value.c1.approved !== null && !strategies.includes(value.c1.approved)) || typeof value.c1.resultReady !== "boolean" || typeof value.c1.reviewed !== "boolean" || ((value.view === "processing" || value.view === "results") && !value.c1.approved) || (value.c1.reviewed && !value.c1.resultReady) || (value.view === "results" && !value.c1.resultReady) || (value.c2.client !== null && !clients.includes(value.c2.client)) || !["not_connected", "connected", "revoked"].includes(value.c2.status) || !Array.isArray(value.c2.scopes) || !value.c2.scopes.every(scope => scopes.includes(scope)) || !Array.isArray(value.c2.grantedScopes) || !value.c2.grantedScopes.every(scope => scopes.includes(scope))) return initialDemoState;
     if (value.c2.status === "connected" && (!value.c2.client || value.c2.grantedScopes.length === 0)) return initialDemoState;
-    return { ...value, c2: { ...value.c2, lastPrompt: typeof value.c2.lastPrompt === "string" ? value.c2.lastPrompt.slice(0, 500) : "" } };
+    const reopenRecommendation = (value.view === "home" || value.view === "c1-home") && !value.c1.approved;
+    return { ...value, view: reopenRecommendation ? "recommendation" : value.view, c2: { ...value.c2, lastPrompt: typeof value.c2.lastPrompt === "string" ? value.c2.lastPrompt.slice(0, 500) : "" } };
   } catch { return initialDemoState; }
 }
 
