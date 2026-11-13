@@ -101,7 +101,7 @@ try {
   if (!result.includes("Bundle") || !result.includes("40 modeled orders") || !result.includes("simulation")) throw new Error(`Missing result data: ${result.slice(0, 600)}`);
   await page.screenshot({ path: resolve(shots, "multi-result-390.png") });
   await page.getByRole("button", { name: "Open mission chat" }).click();
-  await page.getByRole("heading", { name: "Bundle mission chat" }).waitFor();
+  await page.getByRole("heading", { name: "Your Bundle plan is ready!" }).waitFor();
   await page.getByRole("textbox", { name: "Message MAI about this mission" }).fill("What is the live status?");
   await page.getByRole("button", { name: "Send message" }).click();
   await page.getByText(/0 live days completed/).waitFor();

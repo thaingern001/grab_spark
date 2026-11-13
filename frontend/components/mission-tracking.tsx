@@ -45,7 +45,7 @@ export function MissionTracking({ initialMission, comparison, initialOutcome }: 
     catch (cause) { setError(cause instanceof Error ? cause.message : "Could not save the result review."); }
     finally { setBusy(false); }
   }
-  if (showAgent && result) return <div className="page-content tracking-page mission-agent-page"><MissionAgentChat facts={{ strategy: result.selected_strategy_id ? strategyNames[result.selected_strategy_id] : "Approved", contribution: baht(result.trial.estimated_contribution), difference: baht(modeledDifference, true), risk: result.modeled_risk_score, nextStep: result.next_step_guidance }} onBack={() => setShowAgent(false)} /></div>;
+  if (showAgent && result) return <div className="page-content tracking-page mission-agent-page"><MissionAgentChat facts={{ strategyId: result.selected_strategy_id ?? mission.approved_strategy_id, strategy: result.selected_strategy_id ? strategyNames[result.selected_strategy_id] : "Approved", contribution: baht(result.trial.estimated_contribution), difference: baht(modeledDifference, true), risk: result.modeled_risk_score, nextStep: result.next_step_guidance }} onBack={() => setShowAgent(false)} /></div>;
   return <div className="page-content tracking-page oneclick-results">
     <Link href="/ai" className="back-link"><ArrowLeft size={16} /> One Click</Link>
     {result ? <>

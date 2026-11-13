@@ -237,23 +237,55 @@
 .mission-agent-entry h2,.judge-page .mission-agent-entry h2 { margin:0; font-size:16px; font-weight:800; }
 .mission-agent-entry button { display:flex; align-items:center; justify-content:center; gap:5px; min-height:38px; padding:0 10px; border:1px solid #0d7380; border-radius:9px; background:#fff; color:#0a5965; font-size:13px; font-weight:800; cursor:pointer; }
 .mission-agent-page { display:flex; flex-direction:column; height:100%; min-height:0; padding:0; }
-.mission-agent-chat { box-sizing:border-box; display:flex; flex-direction:column; flex:1 1 auto; min-height:0; height:100%; padding:14px 18px 12px; }
-.mission-agent-back { min-height:40px; padding:0; border:0; background:none; color:#096b37; font-size:13px; font-weight:800; cursor:pointer; }
-.mission-agent-kicker { display:flex; align-items:center; gap:6px; margin-top:8px; color:#0c6370; font-size:12px; font-weight:800; }
-.mission-agent-chat h1 { margin:8px 0; font-size:23px; }
-.mission-agent-disclosure { margin:0; color:#49616a; font-size:12px; line-height:1.45; }
-.mission-agent-messages { display:flex; align-items:flex-start; flex-direction:column; flex:1 1 auto; gap:10px; min-height:0; overflow-y:auto; margin:12px 0; scrollbar-width:thin; }
-.mission-agent-message { max-width:94%; padding:11px 12px; border-radius:12px; background:#e8f5f0; font-size:13px; line-height:1.45; }
-.mission-agent-message.is-merchant { align-self:flex-end; background:#e5edf5; }
+.mission-agent-chat { box-sizing:border-box; display:flex; flex-direction:column; flex:1 1 auto; min-height:0; height:100%; padding:10px 16px 12px; background:#080e0b; color:#f7fbf8; }
+.mission-agent-back { flex:0 0 auto; min-height:32px; padding:0; border:0; background:none; color:#71d69b; font-size:13px; font-weight:800; text-align:left; cursor:pointer; }
+.mission-agent-messages { flex:1 1 auto; min-height:0; overflow-y:auto; margin:5px -7px 0; padding:0 7px 15px; scrollbar-width:thin; }
+.mission-agent-intro { margin-bottom:18px; }
+.mission-agent-heading { display:flex; align-items:center; gap:9px; min-width:0; margin:3px 0 18px; }
+.mission-agent-heading .mission-agent-mark { flex:0 0 30px; color:#00c768; background:#0c2418; }
+.mission-agent-heading > div { display:flex; flex-direction:column; min-width:0; }
+.mission-agent-kicker { color:#f7fbf8; font-size:15px; font-weight:800; line-height:1.2; }
+.mission-agent-heading small { color:#a9b8ae; font-size:12px; }
+.mission-agent-status { margin-left:auto; padding:4px 7px; border-radius:999px; background:#103820; color:#5be48b; font-size:11px; font-weight:700; white-space:nowrap; }
+.mission-agent-chat h1 { margin:0 0 7px; font-size:21px; line-height:1.25; }
+.mission-agent-intro p { margin:0; color:#d2dcd5; font-size:13px; line-height:1.4; }
+.mission-plan-card { padding:14px; border:1px solid #304239; border-radius:16px; background:#0d1510; }
+.mission-plan-title { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.mission-plan-title h2 { margin:0; font-size:16px; }
+.mission-plan-title span { padding:4px 7px; border-radius:999px; background:#113820; color:#6ce595; font-size:11px; font-weight:700; white-space:nowrap; }
+.mission-plan-summary { display:flex; align-items:center; gap:11px; margin:14px 0; padding-bottom:14px; border-bottom:1px solid #27372d; }
+.mission-plan-summary .strategy-visual { flex:0 0 76px; }
+.mission-plan-summary .strategy-visual.is-thumbnail .strategy-visual-image { width:76px; height:76px; border-radius:12px; }
+.mission-plan-summary > div { display:flex; flex-direction:column; min-width:0; }
+.mission-plan-summary strong { font-size:15px; line-height:1.2; }
+.mission-plan-summary small { margin:3px 0 6px; color:#a8beb0; font-size:11px; }
+.mission-plan-summary span { color:#c3d1c6; font-size:12px; }
+.mission-plan-summary p { margin:2px 0 0; font-size:12px; }
+.mission-plan-summary b { color:#52df82; font-size:21px; }
+.mission-plan-progress h3,.mission-plan-steps h3 { margin:0 0 9px; font-size:14px; }
+.mission-plan-progress ul { display:grid; gap:9px; margin:0 0 14px; padding:0; list-style:none; }
+.mission-plan-progress li { display:flex; align-items:center; gap:9px; color:#e1e9e3; font-size:12px; line-height:1.3; }
+.mission-plan-progress li svg { flex:0 0 17px; color:#4ad77d; }
+.mission-plan-progress li:nth-last-child(-n+2) svg { color:#a4b0a7; }
+.mission-plan-steps-button { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; min-height:40px; border:0; border-radius:999px; background:#008d43; color:#fff; font-size:13px; font-weight:800; cursor:pointer; }
+.mission-plan-steps { margin-top:13px; padding:12px; border-radius:10px; background:#15241a; color:#dbe7dd; font-size:12px; }
+.mission-plan-steps ol { margin:0; padding-left:20px; }
+.mission-plan-steps p { margin:8px 0 0; }
+.mission-agent-disclosure { margin:12px 4px 17px; color:#aab8ad; font-size:11px; line-height:1.4; }
+.mission-agent-conversation { display:flex; align-items:flex-start; flex-direction:column; gap:8px; }
+.mission-agent-conversation h2 { margin:0 0 3px; color:#dce9df; font-size:14px; }
+.mission-agent-message { max-width:94%; padding:10px 11px; border:1px solid #294334; border-radius:12px; background:#12261a; color:#e9f2eb; font-size:12px; line-height:1.45; }
+.mission-agent-message.is-merchant { align-self:flex-end; border-color:#344c5b; background:#1b303a; }
 .mission-agent-message strong { font-size:12px; }
 .mission-agent-message p { margin:4px 0 0; }
-.mission-agent-composer { flex:0 0 auto; padding-top:8px; border-top:1px solid #e0e9e4; }
-.mission-agent-composer label { display:block; margin-bottom:7px; font-size:12px; font-weight:750; }
+.mission-agent-composer { flex:0 0 auto; padding-top:9px; border-top:1px solid #304239; }
+.mission-agent-composer label { display:block; margin-bottom:6px; color:#dbe6dc; font-size:12px; font-weight:750; }
 .mission-agent-composer > div { display:flex; gap:6px; }
-.mission-agent-composer input { flex:1 1 auto; min-width:0; min-height:44px; padding:9px; border:1px solid #b7c9c1; border-radius:9px; font:inherit; font-size:13px; }
-.mission-agent-composer button { display:grid; flex:0 0 44px; place-items:center; border:0; border-radius:9px; background:#008742; color:#fff; cursor:pointer; }
+.mission-agent-composer input { flex:1 1 auto; min-width:0; min-height:42px; padding:9px; border:1px solid #506457; border-radius:9px; background:#17241b; color:#fff; font:inherit; font-size:12px; }
+.mission-agent-composer input::placeholder { color:#9bac9e; }
+.mission-agent-composer button { display:grid; flex:0 0 42px; place-items:center; border:0; border-radius:9px; background:#008742; color:#fff; cursor:pointer; }
 .mission-agent-composer button:disabled { opacity:.48; cursor:not-allowed; }
-.mission-agent-entry button:focus-visible,.mission-agent-back:focus-visible,.mission-agent-composer button:focus-visible,.mission-agent-composer input:focus-visible { outline:3px solid #0a6570; outline-offset:2px; }
+.mission-agent-entry button:focus-visible,.mission-agent-back:focus-visible,.mission-plan-steps-button:focus-visible,.mission-agent-composer button:focus-visible,.mission-agent-composer input:focus-visible { outline:3px solid #62e799; outline-offset:2px; }
 .result-loading { display:grid; justify-items:center; gap:8px; padding:34px 12px; text-align:center; }
 .result-loading svg { color:#087d3c; animation:processing-spin 1s linear infinite; }
 .result-loading h1 { margin:0; }
