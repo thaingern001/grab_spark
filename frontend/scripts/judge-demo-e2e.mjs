@@ -97,6 +97,9 @@ try {
   await page.getByRole("button", { name: /Authorize simulated connection/ }).click();
   await page.getByText("Connected — Simulated", { exact: true }).waitFor();
   await page.getByRole("button", { name: /Open simulated AI workspace/ }).click();
+  check(await page.locator(".ai-provider-chatgpt").count() === 1, "ChatGPT workspace theme missing");
+  check(await page.locator(".judge-header").count() === 0, "Merchant shell remained inside AI workspace");
+  await page.screenshot({ path: `${shots}/11-c2-chatgpt-welcome.png` });
   await page.getByRole("button", { name: /Ask simulated AI/ }).click();
   check((await page.locator(".judge-tool-list").innerText()).includes("Permission required"), "Restricted tool not blocked");
   check(await page.getByRole("heading", { name: "Top menu performance · synthetic" }).count() === 0, "Menu data exposed without permission");
@@ -132,6 +135,8 @@ try {
   await page.getByRole("checkbox", { name: /Menu Performance — Read/ }).check();
   await page.getByRole("button", { name: /Authorize simulated connection/ }).click();
   await page.getByRole("button", { name: /Open simulated AI workspace/ }).click();
+  check(await page.locator(".ai-provider-claude").count() === 1, "Claude workspace theme missing");
+  await page.screenshot({ path: `${shots}/12-c2-claude-workspace.png` });
   await page.getByRole("button", { name: /Ask simulated AI/ }).click();
   check(await page.getByRole("heading", { name: "Sales summary · synthetic" }).count() === 0, "Revoked sales data exposed");
   await page.getByRole("button", { name: "AI Connections" }).click();
@@ -139,9 +144,14 @@ try {
   check(await page.getByRole("button", { name: /Other.*Concept option/ }).getAttribute("aria-pressed") === "true", "Other client not selected");
   await page.getByRole("button", { name: /Authorize simulated connection/ }).click();
   await page.getByRole("button", { name: /Open simulated AI workspace/ }).click();
-  await page.getByRole("heading", { name: "Other concept workspace" }).waitFor();
+  check(await page.locator(".ai-provider-other").count() === 1, "Other workspace theme missing");
+  await page.getByRole("textbox", { name: "Message Other (simulation)" }).fill("Can you show a made up forecast?");
+  await page.getByRole("textbox", { name: "Message Other (simulation)" }).press("Enter");
+  await page.locator(".ai-user-bubble").getByText("Can you show a made up forecast?").waitFor();
+  await page.getByText(/cannot generate a tailored AI reply/).waitFor();
+  check(await page.locator(".judge-draft").count() === 0, "Custom prompt generated prepared campaign draft");
   await page.reload();
-  await page.getByRole("heading", { name: "Other concept workspace" }).waitFor();
+  await page.locator(".ai-user-bubble").getByText("Can you show a made up forecast?").waitFor();
   await page.getByRole("button", { name: "Reset demo" }).click();
   await page.getByRole("button", { name: "Connector", exact: true }).click();
   check(await page.getByText("Not Connected", { exact: true }).count() === 1, "Reset retained connection");
@@ -183,8 +193,10 @@ try {
     await page.getByRole("button", { name: /Open simulated AI workspace/ }).click();
     await page.getByRole("button", { name: /Ask simulated AI/ }).click();
     await noOverflow(page, `${width}px workspace`);
+    const composerFits = await page.locator(".ai-chat-composer").evaluate(composer => composer.getBoundingClientRect().bottom <= innerHeight + 1);
+    check(composerFits, `${width}px workspace composer clipped`);
     await context.close();
   }
   check(problems.length === 0, `Browser errors: ${problems.join(" | ")}`);
-  console.log("Judge demo: 3 C1 strategies, consent, results, review, C2 permissions/draft/revoke, 7 widths, no backend requests or browser errors passed.");
+  console.log("Judge demo: 3 C1 strategies, consent, results, review, 3 themed C2 chat workspaces, permissions/draft/revoke, 7 widths, no backend requests or browser errors passed.");
 } finally { await browser.close(); }

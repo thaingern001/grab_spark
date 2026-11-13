@@ -6,6 +6,7 @@ import "./checkpoint-a1.css";
 import "./fidelity.css";
 import "./strategy.css";
 import "./judge-demo.css";
+import "./simulated-ai-workspace.css";
 
 export const metadata: Metadata = {
   title: "GrabMerchant Concept | Westrong Kitchen",

@@ -6,14 +6,14 @@ export type DemoView = "home" | "c1-home" | "recommendation" | "comparison" | "d
 export type DemoState = {
   view: DemoView;
   c1: { selected: StrategyId; detail: StrategyId; consentInputs: boolean; consentSimulation: boolean; approved: StrategyId | null; resultReady: boolean; reviewed: boolean };
-  c2: { client: Client | null; scopes: Scope[]; grantedScopes: Scope[]; status: "not_connected" | "connected" | "revoked"; asked: boolean; draftReviewed: boolean };
+  c2: { client: Client | null; scopes: Scope[]; grantedScopes: Scope[]; status: "not_connected" | "connected" | "revoked"; asked: boolean; lastPrompt: string; draftReviewed: boolean };
 };
 
 const key = "grabspark:judge-demo:v1";
 export const initialDemoState: DemoState = {
   view: "home",
   c1: { selected: "bundle", detail: "bundle", consentInputs: false, consentSimulation: false, approved: null, resultReady: false, reviewed: false },
-  c2: { client: null, scopes: [], grantedScopes: [], status: "not_connected", asked: false, draftReviewed: false },
+  c2: { client: null, scopes: [], grantedScopes: [], status: "not_connected", asked: false, lastPrompt: "", draftReviewed: false },
 };
 
 const views: DemoView[] = ["home", "c1-home", "recommendation", "comparison", "details", "processing", "results", "connections", "workspace"];
@@ -28,7 +28,7 @@ export function loadDemoState(): DemoState {
     const value = JSON.parse(raw) as DemoState;
     if (!views.includes(value.view) || !strategies.includes(value.c1.selected) || !strategies.includes(value.c1.detail) || (value.c1.approved !== null && !strategies.includes(value.c1.approved)) || typeof value.c1.resultReady !== "boolean" || typeof value.c1.reviewed !== "boolean" || ((value.view === "processing" || value.view === "results") && !value.c1.approved) || (value.c1.reviewed && !value.c1.resultReady) || (value.view === "results" && !value.c1.resultReady) || (value.c2.client !== null && !clients.includes(value.c2.client)) || !["not_connected", "connected", "revoked"].includes(value.c2.status) || !Array.isArray(value.c2.scopes) || !value.c2.scopes.every(scope => scopes.includes(scope)) || !Array.isArray(value.c2.grantedScopes) || !value.c2.grantedScopes.every(scope => scopes.includes(scope))) return initialDemoState;
     if (value.c2.status === "connected" && (!value.c2.client || value.c2.grantedScopes.length === 0)) return initialDemoState;
-    return value;
+    return { ...value, c2: { ...value.c2, lastPrompt: typeof value.c2.lastPrompt === "string" ? value.c2.lastPrompt.slice(0, 500) : "" } };
   } catch { return initialDemoState; }
 }
 
