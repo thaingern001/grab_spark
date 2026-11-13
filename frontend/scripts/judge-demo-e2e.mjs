@@ -60,7 +60,7 @@ try {
       await page.screenshot({ path: `${shots}/00-merchant-home.png` });
     }
 
-    await page.getByRole("button", { name: "View recommendation" }).click();
+    await page.getByRole("button", { name: "View recommendation" }).click({ position: { x: 20, y: 110 } });
     await page.getByRole("heading", { name: "Recommended: Bundle" }).waitFor();
     await page.waitForFunction(() => [...document.querySelectorAll(".judge-strategy-card img")].every(image => image.complete && image.naturalWidth > 0));
     if (name === "Bundle") await page.screenshot({ path: `${shots}/01-c1-recommendation.png` });

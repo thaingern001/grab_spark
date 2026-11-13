@@ -65,7 +65,7 @@ export function HomeOpportunityPopup({ mission, initialComparison, initialEvalua
   function dismiss() {
     setOpen(false);
     if (forceOpen) router.replace("/");
-    requestAnimationFrame(() => { document.querySelector(".home-for-you")?.scrollIntoView({ behavior: "auto", block: "start" }); document.querySelector<HTMLElement>(".home-recommendation-link")?.focus({ preventScroll: true }); });
+    requestAnimationFrame(() => { document.querySelector(".home-for-you")?.scrollIntoView({ behavior: "auto", block: "start" }); document.querySelector<HTMLElement>(".home-recommendation-hitarea")?.focus({ preventScroll: true }); });
   }
   function show(next: View, strategy?: StrategyId) { if (strategy) setDetailStrategy(strategy); setError(""); setView(next); bodyRef.current?.scrollTo({ top: 0 }); }
   async function refresh() {

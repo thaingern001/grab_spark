@@ -16,12 +16,13 @@ try {
     await dialog.waitFor({ state: "hidden" });
     const card = page.locator(".home-recommendation.is-opportunity");
     await card.waitFor();
+    await page.waitForFunction(() => document.activeElement?.classList.contains("home-recommendation-hitarea"));
     if (width === 390) await page.screenshot({ path: resolve("../docs/screenshots/strategy/home-card-390.png") });
     if (await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1)) throw new Error(`${width}px Home overflow`);
     await page.reload({ waitUntil: "networkidle" });
     await dialog.waitFor();
     await dialog.getByRole("button", { name: "Close One Click recommendation" }).click();
-    await card.getByRole("link", { name: "View recommendation" }).click();
+    await card.getByRole("link", { name: "View recommendation" }).click({ position: { x: 20, y: 110 } });
     await page.waitForURL(/\/opportunity\?/);
     await context.close();
   }
